@@ -6,6 +6,10 @@
 
 > 这是社区项目，与 DeepSeek 没有隶属、授权或官方维护关系。
 
+## 应用截图
+
+![DeepSeek Harness macOS 客户端模型服务设置](docs/images/deepseek-harness-macos.png)
+
 ## 功能
 
 - 原生 SwiftUI 窗口，内嵌完整 Harness 界面

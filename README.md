@@ -8,6 +8,10 @@ It turns the local Harness server into a normal Mac app: double-click to launch,
 
 [中文说明](README.zh-CN.md)
 
+## Screenshot
+
+![DeepSeek Harness for macOS — model provider settings](docs/images/deepseek-harness-macos.png)
+
 ## Features
 
 - Native SwiftUI window with an embedded Harness Web UI
