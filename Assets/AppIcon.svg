@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="blue" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#0f3794"/>
+      <stop offset="1" stop-color="#207cf5"/>
+    </linearGradient>
+  </defs>
+  <rect x="72" y="72" width="880" height="880" rx="220" fill="url(#blue)"/>
+  <rect x="196" y="220" width="632" height="584" rx="104" fill="#ffffff" fill-opacity="0.16"/>
+  <text x="512" y="615" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="292" font-weight="700" fill="#ffffff">DS</text>
+</svg>

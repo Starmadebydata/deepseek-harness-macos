@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test
+        run: swift test
+      - name: Build app bundle
+        run: ./script/build_and_run.sh --build
+      - name: Validate app bundle
+        run: |
+          plutil -lint "dist/DeepSeek Harness.app/Contents/Info.plist"
+          codesign --verify --deep --strict --verbose=2 "dist/DeepSeek Harness.app"
