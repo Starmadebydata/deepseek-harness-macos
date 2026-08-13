@@ -22,7 +22,7 @@ It turns the local Harness server into a normal Mac app: double-click to launch,
 
 - macOS 14 or later
 - Apple Silicon Mac
-- Xcode Command Line Tools or Xcode with Swift 6
+- Xcode Command Line Tools or Xcode with Swift 5.10 or later
 - Node.js 22.19 or later
 - DeepSeek Harness installed globally:
 

@@ -20,7 +20,7 @@
 
 - macOS 14 或更高版本
 - Apple 芯片 Mac
-- Xcode Command Line Tools 或 Xcode，包含 Swift 6
+- Xcode Command Line Tools 或 Xcode，包含 Swift 5.10 或更高版本
 - Node.js 22.19 或更高版本
 - 已安装 DeepSeek Harness：
 
