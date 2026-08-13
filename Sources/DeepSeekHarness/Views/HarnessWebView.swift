@@ -31,10 +31,28 @@ struct HarnessWebView: NSViewRepresentable {
     final class Coordinator: NSObject, WKNavigationDelegate {
         var lastReloadToken: UUID?
 
+        #if compiler(>=6.0)
+        @MainActor
         func webView(
             _ webView: WKWebView,
             decidePolicyFor navigationAction: WKNavigationAction,
             decisionHandler: @escaping @MainActor @Sendable (WKNavigationActionPolicy) -> Void
+        ) {
+            decide(navigationAction, decisionHandler: decisionHandler)
+        }
+        #else
+        func webView(
+            _ webView: WKWebView,
+            decidePolicyFor navigationAction: WKNavigationAction,
+            decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+        ) {
+            decide(navigationAction, decisionHandler: decisionHandler)
+        }
+        #endif
+
+        private func decide(
+            _ navigationAction: WKNavigationAction,
+            decisionHandler: (WKNavigationActionPolicy) -> Void
         ) {
             guard let target = navigationAction.request.url else {
                 decisionHandler(.cancel)
