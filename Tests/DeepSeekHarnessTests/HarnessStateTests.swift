@@ -1,13 +1,15 @@
-import Testing
+import XCTest
 @testable import DeepSeekHarness
 
-@Test func readyStateReportsReadiness() {
-    #expect(HarnessState.ready(ownsServer: true).isReady)
-    #expect(HarnessState.ready(ownsServer: false).isReady)
-    #expect(!HarnessState.launching.isReady)
-}
+final class HarnessStateTests: XCTestCase {
+    func testReadyStateReportsReadiness() {
+        XCTAssertTrue(HarnessState.ready(ownsServer: true).isReady)
+        XCTAssertTrue(HarnessState.ready(ownsServer: false).isReady)
+        XCTAssertFalse(HarnessState.launching.isReady)
+    }
 
-@Test func statusDistinguishesOwnedAndExistingServers() {
-    #expect(HarnessState.ready(ownsServer: true).statusText.contains("本应用启动"))
-    #expect(HarnessState.ready(ownsServer: false).statusText.contains("正在运行"))
+    func testStatusDistinguishesOwnedAndExistingServers() {
+        XCTAssertTrue(HarnessState.ready(ownsServer: true).statusText.contains("本应用启动"))
+        XCTAssertTrue(HarnessState.ready(ownsServer: false).statusText.contains("正在运行"))
+    }
 }
