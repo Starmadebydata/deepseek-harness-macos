@@ -98,6 +98,8 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._mp_btn{height:32px;padding:0 12px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;cursor:pointer;flex:none}
 ._mp_btn:hover{background:var(--dsw-alias-interactive-bg-hover)}
 ._mp_btn:disabled{opacity:.5;cursor:default}
+._mp_pick{width:100%;height:40px;flex:none;border:1px solid var(--dsw-alias-border-l2);border-radius:10px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+._mp_pick:hover{background:var(--dsw-alias-interactive-bg-hover)}
 ._mp_status{padding:14px 4px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:19px;flex:none}
 ._mp_list{display:flex;flex-direction:column;min-height:0;flex:1;overflow-y:auto}
 ._mp_file{width:100%;box-sizing:border-box;border:0;border-bottom:1px solid var(--dsw-alias-border-l1);background:transparent;text-align:left;padding:9px 4px;color:inherit;cursor:pointer;display:flex;align-items:center;gap:8px}
@@ -105,6 +107,8 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._mp_file[data-active]{background:var(--dsw-alias-interactive-bg-active);border-radius:9px}
 ._mp_fileName{min-width:0;flex:1;color:var(--dsw-alias-label-primary);font-size:12px;line-height:18px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
 ._mp_fileMeta{color:var(--dsw-alias-label-tertiary);font-size:11px;font-family:var(--ds-font-family-code)}
+._mp_fileRemove{flex:none;width:24px;height:24px;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-tertiary);display:grid;place-items:center;cursor:pointer}
+._mp_fileRemove:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
 ._mp_player{flex:none;border-top:1px solid var(--dsw-alias-border-l1);padding-top:12px}
 ._mp_video{width:100%;max-height:260px;background:#000;border-radius:10px;display:block}
 ._mp_audio{width:100%;display:block}
@@ -162,12 +166,8 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
     };
 
     const mediaStreamUrl = (path) => `/dsh-right-sidebar/media/stream?path=${encodeURIComponent(path)}`;
-    const formatMediaSize = (bytes) => {
-      if (!Number.isFinite(bytes)) return "";
-      if (bytes < 1024) return `${bytes} B`;
-      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-      return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-    };
+    const isMediaFile = (path) => /\.(mp3|mp4)$/i.test(String(path || ""));
+    const mediaPickerBridge = window.webkit?.messageHandlers?.dshMediaPicker;
 
     function collectVisibleFiles(cwd) {
       const values = new Set();
@@ -746,39 +746,60 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       }, icon("music", 16));
     }
 
-    function MediaPlayer({ useSessions }) {
+    function MediaPlayer() {
       const [open, toggle] = useMediaOpen();
-      const snapshot = useSessions((state) => state);
-      const cwd = snapshot.byId?.[snapshot.current]?.cwd || "";
-      const [dir, setDir] = React.useState("");
-      const [files, setFiles] = React.useState([]);
-      const [loading, setLoading] = React.useState(false);
-      const [error, setError] = React.useState("");
+      const [playlist, setPlaylist] = React.useState([]);
       const [currentPath, setCurrentPath] = React.useState("");
+      const [pathInput, setPathInput] = React.useState("");
+      const [hint, setHint] = React.useState("");
 
-      const scan = React.useCallback(async (targetDir) => {
-        setLoading(true);
-        setError("");
-        try {
-          const response = await fetch("/dsh-right-sidebar/media/list", {
-            method: "POST",
-            headers: { "content-type": "application/json", "x-dsh-right-sidebar": "1" },
-            body: JSON.stringify({ dir: targetDir || "" })
-          });
-          const value = await response.json();
-          if (!response.ok || !value.ok) throw new Error(value.error || "扫描失败");
-          setDir(value.dir);
-          setFiles(Array.isArray(value.files) ? value.files : []);
-        } catch (err) {
-          setError(err?.message || String(err));
-        } finally {
-          setLoading(false);
+      const addPaths = React.useCallback((paths) => {
+        const valid = [];
+        for (const raw of paths) {
+          const path = String(raw || "").trim();
+          if (!path || !isMediaFile(path)) continue;
+          valid.push({ path, name: basename(path) });
         }
+        if (!valid.length) return;
+        setPlaylist((items) => {
+          const seen = new Set(items.map((item) => item.path));
+          return [...items, ...valid.filter((item) => !seen.has(item.path))];
+        });
+        setCurrentPath((current) => current || valid[0].path);
+      }, []);
+
+      const pick = React.useCallback(() => {
+        if (!mediaPickerBridge) {
+          setHint("当前环境不支持原生文件选择，请在下方输入文件路径。");
+          return;
+        }
+        setHint("");
+        try { mediaPickerBridge.postMessage({ action: "pick" }); }
+        catch { setHint("无法打开文件选择器。"); }
       }, []);
 
       React.useEffect(() => {
-        if (open && !dir) scan(cwd || "");
-      }, [open, dir, cwd, scan]);
+        const onPicked = (event) => {
+          const paths = event.detail?.paths;
+          if (Array.isArray(paths) && paths.length) addPaths(paths);
+        };
+        window.addEventListener("dsh-media-picked", onPicked);
+        return () => window.removeEventListener("dsh-media-picked", onPicked);
+      }, [addPaths]);
+
+      const removePath = React.useCallback((path) => {
+        setPlaylist((items) => items.filter((item) => item.path !== path));
+        setCurrentPath((current) => (current === path ? "" : current));
+      }, []);
+
+      const submitPath = () => {
+        const value = pathInput.trim();
+        if (!value) return;
+        if (!isMediaFile(value)) { setHint("仅支持 MP3 / MP4 文件。"); return; }
+        setHint("");
+        addPaths([value]);
+        setPathInput("");
+      };
 
       if (!open) return null;
 
@@ -789,18 +810,21 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
           h("button", { className: "_mp_iconBtn", "aria-label": "关闭媒体播放器", title: "关闭", onClick: toggle }, icon("close", 16))
         ),
         h("div", { className: "_mp_body" },
+          h("button", { className: "_mp_pick", onClick: pick }, icon("music", 15), "选择音频或视频文件"),
           h("div", { className: "_mp_dirRow" },
-            h("input", { className: "_mp_input", value: dir, placeholder: "目录路径，回车扫描", spellCheck: false, onChange: (event) => setDir(event.target.value), onKeyDown: (event) => { if (event.key === "Enter") scan(dir); } }),
-            h("button", { className: "_mp_btn", onClick: () => scan(dir), disabled: loading }, loading ? "扫描中…" : "扫描")
+            h("input", { className: "_mp_input", value: pathInput, placeholder: "或输入文件完整路径，回车添加", spellCheck: false, onChange: (event) => setPathInput(event.target.value), onKeyDown: (event) => { if (event.key === "Enter") submitPath(); } }),
+            h("button", { className: "_mp_btn", onClick: submitPath }, "添加")
           ),
-          error ? h("div", { className: "_mp_status" }, error) : null,
-          !loading && !error && files.length === 0 ? h("div", { className: "_mp_status" }, "没有找到 MP3 / MP4 文件，可输入其它目录后扫描。") : null,
-          h("div", { className: "_mp_list" }, files.map((file) => h("button", {
-            key: file.path, className: "_mp_file", "data-active": file.path === currentPath || undefined,
-            onClick: () => setCurrentPath(file.path)
+          hint ? h("div", { className: "_mp_status" }, hint) : null,
+          playlist.length === 0 ? h("div", { className: "_mp_status" }, "还没有添加文件，点击上方按钮或输入路径选择要播放的 MP3 / MP4。") : null,
+          h("div", { className: "_mp_list" }, playlist.map((item) => h("div", {
+            key: item.path, className: "_mp_file", role: "button", tabIndex: 0, "data-active": item.path === currentPath || undefined,
+            onClick: () => setCurrentPath(item.path),
+            onKeyDown: (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setCurrentPath(item.path); } }
           },
-            h("span", { className: "_mp_fileName" }, file.name),
-            h("span", { className: "_mp_fileMeta" }, formatMediaSize(file.size))
+            h("span", { className: "_mp_fileMeta" }, item.name.toLowerCase().endsWith(".mp4") ? "视频" : "音频"),
+            h("span", { className: "_mp_fileName", title: item.path }, item.name),
+            h("button", { className: "_mp_fileRemove", "aria-label": `移除 ${item.name}`, title: "移除", onClick: (event) => { event.stopPropagation(); removePath(item.path); } }, icon("close", 13))
           ))),
           currentPath ? h("div", { className: "_mp_player" },
             h("div", { className: "_mp_now" }, currentPath),
@@ -831,7 +855,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         name: "shell.overlay",
         id: "media-player",
         order: 90,
-        inject: () => ({ useSessions })
+        inject: () => ({})
       }, MediaPlayer));
     }
 

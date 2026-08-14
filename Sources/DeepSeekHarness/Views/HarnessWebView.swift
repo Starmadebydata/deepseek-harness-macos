@@ -1,4 +1,6 @@
+import AppKit
 import SwiftUI
+import UniformTypeIdentifiers
 import WebKit
 
 struct HarnessWebView: NSViewRepresentable {
@@ -13,6 +15,7 @@ struct HarnessWebView: NSViewRepresentable {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .default()
         configuration.userContentController.add(context.coordinator, name: Coordinator.browserMessageName)
+        configuration.userContentController.add(context.coordinator, name: Coordinator.mediaPickerMessageName)
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
@@ -32,11 +35,13 @@ struct HarnessWebView: NSViewRepresentable {
 
     static func dismantleNSView(_ nsView: WKWebView, coordinator: Coordinator) {
         nsView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.browserMessageName)
+        nsView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.mediaPickerMessageName)
         coordinator.destroyEmbeddedBrowser()
     }
 
     final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
         static let browserMessageName = "dshNativeBrowser"
+        static let mediaPickerMessageName = "dshMediaPicker"
 
         var lastReloadToken: UUID?
         weak var mainWebView: WKWebView?
@@ -53,7 +58,36 @@ struct HarnessWebView: NSViewRepresentable {
             embeddedBrowser = nil
         }
 
+        private func presentMediaPicker() {
+            guard let window = mainWebView?.window else { return }
+            let panel = NSOpenPanel()
+            panel.title = "选择音频或视频"
+            panel.prompt = "选择"
+            panel.allowsMultipleSelection = true
+            panel.canChooseDirectories = false
+            panel.canChooseFiles = true
+            panel.allowedContentTypes = [.mp3, .mpeg4Movie]
+            panel.beginSheetModal(for: window) { [weak self] response in
+                guard let self else { return }
+                let paths = response == .OK ? panel.urls.map { $0.path } : []
+                self.sendMediaPicked(paths: paths)
+            }
+        }
+
+        private func sendMediaPicked(paths: [String]) {
+            guard let mainWebView else { return }
+            guard let data = try? JSONSerialization.data(withJSONObject: ["paths": paths]),
+                  let json = String(data: data, encoding: .utf8) else { return }
+            mainWebView.evaluateJavaScript(
+                "window.dispatchEvent(new CustomEvent('dsh-media-picked',{detail:\(json)}));"
+            )
+        }
+
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            if message.name == Self.mediaPickerMessageName {
+                presentMediaPicker()
+                return
+            }
             guard message.name == Self.browserMessageName,
                   let body = message.body as? [String: Any],
                   let action = body["action"] as? String else { return }

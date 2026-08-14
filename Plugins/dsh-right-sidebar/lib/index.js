@@ -1,23 +1,18 @@
 // Host services for the DeepSeek Harness macOS right sidebar.
 import { randomUUID } from "node:crypto";
 import { createReadStream } from "node:fs";
-import { readdir, stat } from "node:fs/promises";
+import { stat } from "node:fs/promises";
 import { spawn } from "node:child_process";
-import { extname, join, resolve } from "node:path";
-import { homedir } from "node:os";
+import { extname, resolve } from "node:path";
 
 export const name = "dsh-right-sidebar";
 export const inject = ["webServer"];
 
 const ENDPOINT = "/dsh-right-sidebar/terminal";
-const MEDIA_LIST_ENDPOINT = "/dsh-right-sidebar/media/list";
 const MEDIA_STREAM_ENDPOINT = "/dsh-right-sidebar/media/stream";
 const MAX_BODY = 40 * 1024;
 const MAX_OUTPUT = 200 * 1024;
-const MEDIA_EXTENSIONS = new Set([".mp3", ".mp4"]);
 const MEDIA_TYPES = { ".mp3": "audio/mpeg", ".mp4": "video/mp4" };
-const MEDIA_MAX_FILES = 200;
-const MEDIA_MAX_DEPTH = 5;
 
 function json(res, status, value) {
   res.writeHead(status, {
@@ -41,35 +36,6 @@ const isSameOrigin = (req) => {
   const site = req.headers["sec-fetch-site"];
   return !site || site === "same-origin" || site === "none";
 };
-
-async function listMediaFiles(root) {
-  const results = [];
-  const pending = [{ dir: root, depth: 0 }];
-  while (pending.length && results.length < MEDIA_MAX_FILES) {
-    const { dir, depth } = pending.pop();
-    let entries;
-    try {
-      entries = await readdir(dir, { withFileTypes: true });
-    } catch {
-      continue;
-    }
-    for (const entry of entries) {
-      if (results.length >= MEDIA_MAX_FILES) break;
-      if (entry.name.startsWith(".") || entry.name === "node_modules") continue;
-      const full = join(dir, entry.name);
-      if (entry.isDirectory()) {
-        if (depth < MEDIA_MAX_DEPTH) pending.push({ dir: full, depth: depth + 1 });
-      } else if (entry.isFile() && MEDIA_EXTENSIONS.has(extname(entry.name).toLowerCase())) {
-        try {
-          const info = await stat(full);
-          results.push({ path: full, name: entry.name, size: info.size });
-        } catch {}
-      }
-    }
-  }
-  results.sort((a, b) => a.name.localeCompare(b.name));
-  return results;
-}
 
 function streamMedia(req, res, rawPath) {
   const ext = extname(rawPath).toLowerCase();
@@ -240,24 +206,6 @@ export function apply(ctx) {
   }, "dsh-right-sidebar: terminal");
 
   ctx.effect(() => {
-    const disposeList = ctx.webServer.register({
-      kind: "exact",
-      path: MEDIA_LIST_ENDPOINT,
-      handler: async (req, res) => {
-        if (req.method !== "POST" || req.headers["x-dsh-right-sidebar"] !== "1" || !isSameOrigin(req)) {
-          json(res, 403, { ok: false, error: "forbidden" });
-          return;
-        }
-        try {
-          const body = await readJson(req);
-          const dir = typeof body.dir === "string" && body.dir.startsWith("/") ? body.dir : homedir();
-          const files = await listMediaFiles(dir);
-          json(res, 200, { ok: true, dir, files });
-        } catch (error) {
-          json(res, 400, { ok: false, error: error instanceof Error ? error.message : String(error) });
-        }
-      }
-    });
     const disposeStream = ctx.webServer.register({
       kind: "exact",
       path: MEDIA_STREAM_ENDPOINT,
@@ -271,7 +219,6 @@ export function apply(ctx) {
       }
     });
     return () => {
-      disposeList();
       disposeStream();
     };
   }, "dsh-right-sidebar: media");
