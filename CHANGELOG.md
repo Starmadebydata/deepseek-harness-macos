@@ -7,7 +7,7 @@ All notable changes to this project are documented here.
 ### Added
 
 - Remember the right-sidebar width across app launches.
-- Add a media player in the right sidebar that streams local MP3 and MP4 files.
+- Add a right-sidebar media player with a persistent mini-player, live audio visualizer, and playlist management.
 
 ### Changed
 

@@ -82,6 +82,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._rs_terminalStatus{color:#f0b35a}
 @media(max-width:820px){._rs_panel{width:min(320px,calc(100vw - 56px));min-width:280px;box-shadow:-18px 0 40px rgba(0,0,0,.12)}}
 @media(prefers-reduced-motion:reduce){._rs_panel{animation:none}}
+._mp_body{display:flex;flex-direction:column;gap:12px}
 ._mp_dirRow{display:flex;gap:8px;flex:none}
 ._mp_input{min-width:0;flex:1;height:32px;box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;padding:0 9px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;outline:0}
 ._mp_input:focus{border-color:var(--dsw-alias-brand-primary)}
@@ -91,18 +92,34 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._mp_pick{width:100%;height:40px;flex:none;border:1px solid var(--dsw-alias-border-l2);border-radius:10px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
 ._mp_pick:hover{background:var(--dsw-alias-interactive-bg-hover)}
 ._mp_status{padding:14px 4px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:19px;flex:none}
-._mp_list{display:flex;flex-direction:column;min-height:0;flex:1;overflow-y:auto}
-._mp_file{width:100%;box-sizing:border-box;border:0;border-bottom:1px solid var(--dsw-alias-border-l1);background:transparent;text-align:left;padding:9px 4px;color:inherit;cursor:pointer;display:flex;align-items:center;gap:8px}
+._mp_plHead{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+._mp_plLabel{color:var(--dsw-alias-label-tertiary);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+._mp_clear{height:24px;padding:0 8px;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-tertiary);font:inherit;font-size:11px;cursor:pointer}
+._mp_clear:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+._mp_list{display:flex;flex-direction:column}
+._mp_file{width:100%;box-sizing:border-box;border:0;border-bottom:1px solid var(--dsw-alias-border-l1);background:transparent;text-align:left;padding:8px 4px;color:inherit;cursor:pointer;display:flex;align-items:center;gap:4px}
 ._mp_file:hover{background:var(--dsw-alias-interactive-bg-hover);border-radius:9px}
 ._mp_file[data-active]{background:var(--dsw-alias-interactive-bg-active);border-radius:9px}
+._mp_file[data-active] ._mp_fileName{color:var(--dsw-alias-brand-primary)}
 ._mp_fileName{min-width:0;flex:1;color:var(--dsw-alias-label-primary);font-size:12px;line-height:18px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
-._mp_fileMeta{color:var(--dsw-alias-label-tertiary);font-size:11px;font-family:var(--ds-font-family-code)}
-._mp_fileRemove{flex:none;width:24px;height:24px;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-tertiary);display:grid;place-items:center;cursor:pointer}
+._mp_fileMeta{flex:none;color:var(--dsw-alias-label-tertiary);font-size:11px;font-family:var(--ds-font-family-code)}
+._mp_fileRemove{flex:none;width:22px;height:22px;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-tertiary);display:grid;place-items:center;cursor:pointer}
 ._mp_fileRemove:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
-._mp_player{flex:none;border-top:1px solid var(--dsw-alias-border-l1);padding-top:12px}
 ._mp_video{width:100%;max-height:260px;background:#000;border-radius:10px;display:block}
-._mp_audio{width:100%;display:block}
-._mp_now{margin-bottom:8px;color:var(--dsw-alias-label-secondary);font-size:12px;word-break:break-all}
+._np_footer{flex:none;border-top:1px solid var(--dsw-alias-border-l1);padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px;background:var(--dsw-alias-bg-base)}
+._np_footer[data-hidden]{display:none}
+._np_viz{width:100%;height:56px;display:block;border-radius:8px;background:color-mix(in srgb,var(--dsw-alias-bg-layer-1) 60%,transparent)}
+._np_row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+._np_info{min-width:0;flex:1}
+._np_title{color:var(--dsw-alias-label-primary);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+._np_time{color:var(--dsw-alias-label-tertiary);font-size:11px;margin-top:2px;font-family:var(--ds-font-family-code)}
+._np_controls{display:flex;align-items:center;gap:2px;flex:none}
+._np_btn{width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:var(--dsw-alias-label-secondary);display:grid;place-items:center;cursor:pointer}
+._np_btn:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+._np_play{width:36px;height:36px;background:var(--dsw-alias-brand-primary);color:#fff}
+._np_play:hover{background:var(--dsw-alias-brand-primary);color:#fff}
+._np_seek{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--dsw-alias-border-l2);border-radius:2px;outline:0;cursor:pointer}
+._np_seek::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:var(--dsw-alias-brand-primary);cursor:pointer}
 `;
     const styleId = "dsh-right-sidebar/styles";
     if (typeof document !== "undefined" && !document.querySelector(`style[data-plugin-css="${styleId}"]`)) {
@@ -122,6 +139,12 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       if (kind === "reload") return h("svg", common, h("path", { d: "M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" }));
       if (kind === "external") return h("svg", common, h("path", { d: "M14 5h5v5M19 5l-8 8M18 13v6H5V6h6" }));
       if (kind === "music") return h("svg", common, h("path", { d: "M9 18V6l12-2v12" }), h("circle", { cx: 6, cy: 18, r: 3 }), h("circle", { cx: 18, cy: 16, r: 3 }));
+      if (kind === "play") return h("svg", common, h("path", { d: "M7 5l12 7-12 7z" }));
+      if (kind === "pause") return h("svg", common, h("path", { d: "M7 5h4v14H7zM13 5h4v14h-4z" }));
+      if (kind === "prev") return h("svg", common, h("path", { d: "M6 5v14M19 5l-10 7 10 7z" }));
+      if (kind === "next") return h("svg", common, h("path", { d: "M18 5v14M5 5l10 7-10 7z" }));
+      if (kind === "up") return h("svg", common, h("path", { d: "M12 5l-6 6h12z" }));
+      if (kind === "down") return h("svg", common, h("path", { d: "M12 19l6-6H6z" }));
       return h("svg", common, h("path", { d: "M5 4h14v16H5zM9 8h6M9 12h6M9 16h4" }));
     }
 
@@ -156,6 +179,16 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 
     const mediaStreamUrl = (path) => `/dsh-right-sidebar/media/stream?path=${encodeURIComponent(path)}`;
     const isMediaFile = (path) => /\.(mp3|mp4)$/i.test(String(path || ""));
+    const mediaName = (path) => {
+      const base = basename(path).replace(/\.(mp3|mp4)$/i, "");
+      return base.replace(/[_-]+/g, " ").trim() || base;
+    };
+    const formatTime = (seconds) => {
+      if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${String(s).padStart(2, "0")}`;
+    };
     const mediaPickerBridge = window.webkit?.messageHandlers?.dshMediaPicker;
 
     function collectVisibleFiles(cwd) {
@@ -255,13 +288,23 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       const [mediaPath, setMediaPath] = React.useState("");
       const [mediaInput, setMediaInput] = React.useState("");
       const [mediaHint, setMediaHint] = React.useState("");
+      const [mediaPlaying, setMediaPlaying] = React.useState(false);
+      const [mediaTime, setMediaTime] = React.useState(0);
+      const [mediaDuration, setMediaDuration] = React.useState(0);
+      const audioRef = React.useRef(null);
+      const videoRef = React.useRef(null);
+      const vizCanvasRef = React.useRef(null);
+      const audioCtxRef = React.useRef(null);
+
+      const isMediaVideo = mediaPath.toLowerCase().endsWith(".mp4");
+      const currentMediaName = mediaPath ? mediaName(mediaPath) : "";
 
       const addMediaPaths = React.useCallback((paths) => {
         const valid = [];
         for (const raw of paths) {
           const path = String(raw || "").trim();
           if (!path || !isMediaFile(path)) continue;
-          valid.push({ path, name: basename(path) });
+          valid.push({ path, name: mediaName(path) });
         }
         if (!valid.length) return;
         setMediaPlaylist((items) => {
@@ -295,6 +338,59 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         setMediaPath((current) => (current === path ? "" : current));
       }, []);
 
+      const moveMediaItem = React.useCallback((index, delta) => {
+        setMediaPlaylist((items) => {
+          const target = index + delta;
+          if (target < 0 || target >= items.length) return items;
+          const next = [...items];
+          [next[index], next[target]] = [next[target], next[index]];
+          return next;
+        });
+      }, []);
+
+      const clearMediaList = React.useCallback(() => {
+        setMediaPlaylist([]);
+        setMediaPath("");
+        setMediaPlaying(false);
+        setMediaTime(0);
+        setMediaDuration(0);
+      }, []);
+
+      const playMedia = React.useCallback((path) => {
+        setMediaPath(path);
+        setMediaTime(0);
+        setMediaPlaying(true);
+      }, []);
+
+      const playMediaNext = React.useCallback(() => {
+        if (!mediaPlaylist.length) return;
+        const idx = mediaPlaylist.findIndex((item) => item.path === mediaPath);
+        const next = mediaPlaylist[(idx + 1) % mediaPlaylist.length];
+        if (next) playMedia(next.path);
+      }, [mediaPlaylist, mediaPath, playMedia]);
+
+      const playMediaPrev = React.useCallback(() => {
+        if (!mediaPlaylist.length) return;
+        const idx = mediaPlaylist.findIndex((item) => item.path === mediaPath);
+        const prev = mediaPlaylist[(idx - 1 + mediaPlaylist.length) % mediaPlaylist.length];
+        if (prev) playMedia(prev.path);
+      }, [mediaPlaylist, mediaPath, playMedia]);
+
+      const toggleMedia = React.useCallback(() => {
+        const el = isMediaVideo ? videoRef.current : audioRef.current;
+        if (!el) return;
+        if (el.paused) { const p = el.play(); if (p) p.catch(() => {}); }
+        else el.pause();
+      }, [isMediaVideo]);
+
+      const seekMedia = React.useCallback((value) => {
+        const el = isMediaVideo ? videoRef.current : audioRef.current;
+        const time = Number(value);
+        if (!el || !Number.isFinite(time)) return;
+        el.currentTime = time;
+        setMediaTime(time);
+      }, [isMediaVideo]);
+
       const submitMediaPath = () => {
         const value = mediaInput.trim();
         if (!value) return;
@@ -303,6 +399,70 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         addMediaPaths([value]);
         setMediaInput("");
       };
+
+      React.useEffect(() => {
+        if (!mediaPath) return;
+        const el = mediaPath.toLowerCase().endsWith(".mp4") ? videoRef.current : audioRef.current;
+        if (!el) return;
+        el.load();
+        const p = el.play();
+        if (p) p.catch(() => {});
+      }, [mediaPath]);
+
+      React.useEffect(() => {
+        if (tab !== "media" || !isMediaVideo) return;
+        const v = videoRef.current;
+        if (v && v.paused) { const p = v.play(); if (p) p.catch(() => {}); }
+      }, [tab, isMediaVideo]);
+
+      React.useEffect(() => {
+        if (!open) return;
+        const audio = audioRef.current;
+        const canvas = vizCanvasRef.current;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!audio || !canvas || !Ctx) return;
+        if (!audioCtxRef.current) audioCtxRef.current = new Ctx();
+        const ctx = audioCtxRef.current;
+        if (ctx.state === "suspended") ctx.resume().catch(() => {});
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.82;
+        try {
+          const source = ctx.createMediaElementSource(audio);
+          source.connect(analyser);
+          source.connect(ctx.destination);
+        } catch {}
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        let raf = 0;
+        const draw = () => {
+          const c = vizCanvasRef.current;
+          if (c) {
+            const g = c.getContext("2d");
+            const w = c.width;
+            const h = c.height;
+            if (w && h) {
+              analyser.getByteFrequencyData(data);
+              g.clearRect(0, 0, w, h);
+              const bars = 64;
+              const gap = 2;
+              const bw = (w - gap * (bars - 1)) / bars;
+              const grad = g.createLinearGradient(0, h, 0, 0);
+              grad.addColorStop(0, "#4f7cff");
+              grad.addColorStop(1, "#b388ff");
+              g.fillStyle = grad;
+              for (let i = 0; i < bars; i++) {
+                const v = data[Math.floor((i / bars) * (data.length * 0.72))] / 255;
+                const bh = Math.max(2, v * (h - 4));
+                const x = i * (bw + gap);
+                g.fillRect(x, h - bh, bw, bh);
+              }
+            }
+          }
+          raf = requestAnimationFrame(draw);
+        };
+        raf = requestAnimationFrame(draw);
+        return () => cancelAnimationFrame(raf);
+      }, [open]);
 
       React.useEffect(() => {
         let live = true;
@@ -749,29 +909,30 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         )
       );
 
-      const mediaBody = h(React.Fragment, null,
+      const mediaBody = h("div", { className: "_mp_body" },
         h("button", { className: "_mp_pick", onClick: pickMedia }, icon("music", 15), "选择音频或视频文件"),
         h("div", { className: "_mp_dirRow" },
           h("input", { className: "_mp_input", value: mediaInput, placeholder: "或输入文件完整路径，回车添加", spellCheck: false, onChange: (event) => setMediaInput(event.target.value), onKeyDown: (event) => { if (event.key === "Enter") submitMediaPath(); } }),
           h("button", { className: "_mp_btn", onClick: submitMediaPath }, "添加")
         ),
         mediaHint ? h("div", { className: "_mp_status" }, mediaHint) : null,
+        mediaPath && isMediaVideo ? h("video", { ref: videoRef, key: mediaPath, className: "_mp_video", src: mediaStreamUrl(mediaPath), controls: true, onPlay: () => setMediaPlaying(true), onPause: () => setMediaPlaying(false), onTimeUpdate: (event) => setMediaTime(event.currentTarget.currentTime), onLoadedMetadata: (event) => setMediaDuration(event.currentTarget.duration), onEnded: playMediaNext }) : null,
+        h("div", { className: "_mp_plHead" },
+          h("span", { className: "_mp_plLabel" }, `播放列表 · ${mediaPlaylist.length}`),
+          mediaPlaylist.length ? h("button", { className: "_mp_clear", onClick: clearMediaList }, "清空") : null
+        ),
         mediaPlaylist.length === 0 ? h("div", { className: "_mp_status" }, "还没有添加文件，点击上方按钮或输入路径选择要播放的 MP3 / MP4。") : null,
-        h("div", { className: "_mp_list" }, mediaPlaylist.map((item) => h("div", {
+        h("div", { className: "_mp_list" }, mediaPlaylist.map((item, index) => h("div", {
           key: item.path, className: "_mp_file", role: "button", tabIndex: 0, "data-active": item.path === mediaPath || undefined,
-          onClick: () => setMediaPath(item.path),
-          onKeyDown: (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setMediaPath(item.path); } }
+          onClick: () => playMedia(item.path),
+          onKeyDown: (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); playMedia(item.path); } }
         },
-          h("span", { className: "_mp_fileMeta" }, item.name.toLowerCase().endsWith(".mp4") ? "视频" : "音频"),
-          h("span", { className: "_mp_fileName", title: item.path }, item.name),
+          h("span", { className: "_mp_fileMeta" }, item.path.toLowerCase().endsWith(".mp4") ? "视频" : "音频"),
+          h("span", { className: "_mp_fileName", title: item.name }, item.name),
+          h("button", { className: "_mp_fileRemove", "aria-label": `上移 ${item.name}`, title: "上移", onClick: (event) => { event.stopPropagation(); moveMediaItem(index, -1); } }, icon("up", 13)),
+          h("button", { className: "_mp_fileRemove", "aria-label": `下移 ${item.name}`, title: "下移", onClick: (event) => { event.stopPropagation(); moveMediaItem(index, 1); } }, icon("down", 13)),
           h("button", { className: "_mp_fileRemove", "aria-label": `移除 ${item.name}`, title: "移除", onClick: (event) => { event.stopPropagation(); removeMediaPath(item.path); } }, icon("close", 13))
-        ))),
-        mediaPath ? h("div", { className: "_mp_player" },
-          h("div", { className: "_mp_now" }, mediaPath),
-          mediaPath.toLowerCase().endsWith(".mp4")
-            ? h("video", { key: mediaPath, className: "_mp_video", src: mediaStreamUrl(mediaPath), controls: true, autoPlay: true })
-            : h("audio", { key: mediaPath, className: "_mp_audio", src: mediaStreamUrl(mediaPath), controls: true, autoPlay: true })
-        ) : null
+        )))
       );
 
       if (!open) return h("button", { className: "_rs_toggle", "aria-label": "打开多功能右边栏", title: "打开右边栏 · ⇧⌘F", onClick: toggle }, icon("panel", 17), h("span", { className: "_rs_hint" }, "搜索、浏览器与终端"));
@@ -782,7 +943,23 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         h("div", { className: "_rs_tabs", role: "tablist" },
           [["search", "搜索"], ["files", "文件"], ["overview", "概览"], ["browser", "浏览器"], ["terminal", "终端"], ["media", "媒体"]].map(([id, label]) => h("button", { key: id, role: "tab", className: "_rs_tab", "data-active": tab === id || undefined, "aria-selected": tab === id, onClick: () => chooseTab(id) }, label))
         ),
-        h("div", { className: "_rs_body", "data-full": tab === "browser" || tab === "terminal" || undefined }, tab === "search" ? searchBody : tab === "files" ? filesBody : tab === "overview" ? overviewBody : tab === "browser" ? browserBody : tab === "terminal" ? terminalBody : mediaBody)
+        h("div", { className: "_rs_body", "data-full": tab === "browser" || tab === "terminal" || undefined }, tab === "search" ? searchBody : tab === "files" ? filesBody : tab === "overview" ? overviewBody : tab === "browser" ? browserBody : tab === "terminal" ? terminalBody : mediaBody),
+        h("div", { className: "_np_footer", "data-hidden": mediaPath ? undefined : "" },
+          h("canvas", { ref: vizCanvasRef, className: "_np_viz", width: 800, height: 64 }),
+          h("audio", { ref: audioRef, style: { display: "none" }, src: !isMediaVideo && mediaPath ? mediaStreamUrl(mediaPath) : undefined, onPlay: () => setMediaPlaying(true), onPause: () => setMediaPlaying(false), onTimeUpdate: (event) => setMediaTime(event.currentTarget.currentTime), onLoadedMetadata: (event) => setMediaDuration(event.currentTarget.duration), onEnded: playMediaNext }),
+          h("div", { className: "_np_row" },
+            h("div", { className: "_np_info" },
+              h("div", { className: "_np_title" }, currentMediaName || "未播放"),
+              h("div", { className: "_np_time" }, `${formatTime(mediaTime)} / ${formatTime(mediaDuration)}`)
+            ),
+            h("div", { className: "_np_controls" },
+              h("button", { className: "_np_btn", title: "上一首", onClick: playMediaPrev }, icon("prev", 16)),
+              h("button", { className: "_np_btn _np_play", title: mediaPlaying ? "暂停" : "播放", onClick: toggleMedia }, icon(mediaPlaying ? "pause" : "play", 18)),
+              h("button", { className: "_np_btn", title: "下一首", onClick: playMediaNext }, icon("next", 16))
+            )
+          ),
+          h("input", { className: "_np_seek", type: "range", min: 0, max: mediaDuration || 0, step: 0.1, value: mediaTime, onChange: (event) => seekMedia(event.target.value), "aria-label": "播放进度" })
+        )
       );
     }
 
