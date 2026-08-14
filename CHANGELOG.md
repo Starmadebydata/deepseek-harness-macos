@@ -7,7 +7,7 @@ All notable changes to this project are documented here.
 ### Added
 
 - Remember the right-sidebar width across app launches.
-- Add a right-sidebar media player with a persistent mini-player, live audio visualizer, and playlist management.
+- Add a right-sidebar media player with a persistent mini-player, live audio visualizer, playlist management, and ID3/MP4 tag reading (title, artist, album).
 
 ### Changed
 

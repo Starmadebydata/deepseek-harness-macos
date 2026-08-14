@@ -101,7 +101,9 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._mp_file:hover{background:var(--dsw-alias-interactive-bg-hover);border-radius:9px}
 ._mp_file[data-active]{background:var(--dsw-alias-interactive-bg-active);border-radius:9px}
 ._mp_file[data-active] ._mp_fileName{color:var(--dsw-alias-brand-primary)}
-._mp_fileName{min-width:0;flex:1;color:var(--dsw-alias-label-primary);font-size:12px;line-height:18px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+._mp_fileText{min-width:0;flex:1;display:flex;flex-direction:column}
+._mp_fileName{min-width:0;color:var(--dsw-alias-label-primary);font-size:12px;line-height:18px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+._mp_fileSub{color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:16px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;margin-top:1px}
 ._mp_fileMeta{flex:none;color:var(--dsw-alias-label-tertiary);font-size:11px;font-family:var(--ds-font-family-code)}
 ._mp_fileRemove{flex:none;width:22px;height:22px;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-tertiary);display:grid;place-items:center;cursor:pointer}
 ._mp_fileRemove:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
@@ -113,6 +115,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._np_info{min-width:0;flex:1}
 ._np_title{color:var(--dsw-alias-label-primary);font-size:13px;font-weight:600;line-height:18px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
 ._np_time{color:var(--dsw-alias-label-tertiary);font-size:11px;margin-top:2px;font-family:var(--ds-font-family-code)}
+._np_sub{color:var(--dsw-alias-label-secondary);font-size:11px;line-height:16px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;margin-top:2px}
 ._np_controls{display:flex;align-items:center;gap:2px;flex:none}
 ._np_btn{width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:var(--dsw-alias-label-secondary);display:grid;place-items:center;cursor:pointer}
 ._np_btn:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
@@ -190,6 +193,24 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       return `${m}:${String(s).padStart(2, "0")}`;
     };
     const mediaPickerBridge = window.webkit?.messageHandlers?.dshMediaPicker;
+    const fetchMediaMetadata = async (path) => {
+      try {
+        const response = await fetch("/dsh-right-sidebar/media/metadata", {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-dsh-right-sidebar": "1" },
+          body: JSON.stringify({ path })
+        });
+        const value = await response.json();
+        if (!response.ok || !value.ok) return {};
+        return {
+          title: typeof value.title === "string" ? value.title : "",
+          artist: typeof value.artist === "string" ? value.artist : "",
+          album: typeof value.album === "string" ? value.album : ""
+        };
+      } catch {
+        return {};
+      }
+    };
 
     function collectVisibleFiles(cwd) {
       const values = new Set();
@@ -298,13 +319,15 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 
       const isMediaVideo = mediaPath.toLowerCase().endsWith(".mp4");
       const currentMediaName = mediaPath ? mediaName(mediaPath) : "";
+      const currentMediaItem = mediaPlaylist.find((item) => item.path === mediaPath);
+      const currentMediaSub = [currentMediaItem?.artist, currentMediaItem?.album].filter(Boolean).join(" · ");
 
       const addMediaPaths = React.useCallback((paths) => {
         const valid = [];
         for (const raw of paths) {
           const path = String(raw || "").trim();
           if (!path || !isMediaFile(path)) continue;
-          valid.push({ path, name: mediaName(path) });
+          valid.push({ path, name: mediaName(path), title: "", artist: "", album: "" });
         }
         if (!valid.length) return;
         setMediaPlaylist((items) => {
@@ -312,6 +335,11 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
           return [...items, ...valid.filter((item) => !seen.has(item.path))];
         });
         setMediaPath((current) => current || valid[0].path);
+        for (const item of valid) {
+          fetchMediaMetadata(item.path).then((meta) => {
+            setMediaPlaylist((items) => items.map((it) => (it.path === item.path ? { ...it, ...meta } : it)));
+          }).catch(() => {});
+        }
       }, []);
 
       const pickMedia = React.useCallback(() => {
@@ -928,7 +956,10 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
           onKeyDown: (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); playMedia(item.path); } }
         },
           h("span", { className: "_mp_fileMeta" }, item.path.toLowerCase().endsWith(".mp4") ? "视频" : "音频"),
-          h("span", { className: "_mp_fileName", title: item.name }, item.name),
+          h("div", { className: "_mp_fileText" },
+            h("div", { className: "_mp_fileName", title: item.title || item.name }, item.title || item.name),
+            (item.artist || item.album) ? h("div", { className: "_mp_fileSub" }, [item.artist, item.album].filter(Boolean).join(" · ")) : null
+          ),
           h("button", { className: "_mp_fileRemove", "aria-label": `上移 ${item.name}`, title: "上移", onClick: (event) => { event.stopPropagation(); moveMediaItem(index, -1); } }, icon("up", 13)),
           h("button", { className: "_mp_fileRemove", "aria-label": `下移 ${item.name}`, title: "下移", onClick: (event) => { event.stopPropagation(); moveMediaItem(index, 1); } }, icon("down", 13)),
           h("button", { className: "_mp_fileRemove", "aria-label": `移除 ${item.name}`, title: "移除", onClick: (event) => { event.stopPropagation(); removeMediaPath(item.path); } }, icon("close", 13))
@@ -949,7 +980,8 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
           h("audio", { ref: audioRef, style: { display: "none" }, src: !isMediaVideo && mediaPath ? mediaStreamUrl(mediaPath) : undefined, onPlay: () => setMediaPlaying(true), onPause: () => setMediaPlaying(false), onTimeUpdate: (event) => setMediaTime(event.currentTarget.currentTime), onLoadedMetadata: (event) => setMediaDuration(event.currentTarget.duration), onEnded: playMediaNext }),
           h("div", { className: "_np_row" },
             h("div", { className: "_np_info" },
-              h("div", { className: "_np_title" }, currentMediaName || "未播放"),
+              h("div", { className: "_np_title" }, currentMediaItem?.title || currentMediaName || "未播放"),
+              currentMediaSub ? h("div", { className: "_np_sub" }, currentMediaSub) : null,
               h("div", { className: "_np_time" }, `${formatTime(mediaTime)} / ${formatTime(mediaDuration)}`)
             ),
             h("div", { className: "_np_controls" },
