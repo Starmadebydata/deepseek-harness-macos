@@ -1,6 +1,6 @@
 # DeepSeek Harness macOS 客户端
 
-当前版本：**0.2.1** · [版本更新日志](CHANGELOG.md)
+当前版本：**0.3.0** · [版本更新日志](CHANGELOG.md)
 
 这是官方 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI 的轻量原生 macOS 外壳。
 

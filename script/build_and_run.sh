@@ -5,7 +5,7 @@ MODE="${1:-run}"
 APP_NAME="DeepSeek Harness"
 PROCESS_NAME="DeepSeekHarness"
 BUNDLE_ID="com.elliotguo.deepseek-harness"
-APP_VERSION="0.2.1"
+APP_VERSION="0.3.0"
 MIN_SYSTEM_VERSION="14.0"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -59,7 +59,7 @@ cat >"$INFO_PLIST" <<PLIST
   <key>CFBundleShortVersionString</key>
   <string>$APP_VERSION</string>
   <key>CFBundleVersion</key>
-  <string>3</string>
+  <string>4</string>
   <key>LSMinimumSystemVersion</key>
   <string>$MIN_SYSTEM_VERSION</string>
   <key>NSHighResolutionCapable</key>
