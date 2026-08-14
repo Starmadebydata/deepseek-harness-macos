@@ -14,6 +14,15 @@ window.__ModuleLoader__.load({
 ._rs_toggle{position:absolute;z-index:24;right:0;top:50%;width:32px;height:68px;transform:translateY(-50%);border:1px solid var(--dsw-alias-border-l2);border-right:0;border-radius:13px 0 0 13px;background:var(--dsw-alias-button-floating-fill);color:var(--dsw-alias-label-secondary);display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.08);transition:width .16s ease,background .16s ease,color .16s ease}
 ._rs_toggle:hover{width:38px;background:var(--dsw-alias-button-floating-hover);color:var(--dsw-alias-label-primary)}
 ._rs_panel{position:absolute;z-index:23;inset:0 0 0 auto;width:min(360px,calc(100vw - 456px));min-width:300px;background:var(--dsw-alias-bg-base);border-left:1px solid var(--dsw-alias-border-l2);display:flex;flex-direction:column;box-shadow:-12px 0 32px rgba(0,0,0,.035);animation:_rs_in .18s var(--ds-ease-in-out)}
+._rs_resize{position:absolute;z-index:31;left:-9px;top:0;bottom:0;width:18px;cursor:col-resize;touch-action:none}
+._rs_resize:after{content:"";position:absolute;left:50%;top:50%;width:3px;height:34px;border-radius:4px;background:var(--dsw-alias-border-l3);opacity:.28;transform:translate(-50%,-50%);transition:opacity .12s ease,background .12s ease}
+._rs_resize:hover:after,._rs_resize[data-dragging]:after{opacity:1;background:var(--dsw-alias-brand-primary)}
+body[data-rs-resizing] ._rs_browserFrame{pointer-events:none!important}
+body[data-rs-wide] .pI_x6G_centerCol table{width:100%;max-width:100%}
+body[data-rs-wide] .pI_x6G_centerCol th,body[data-rs-wide] .pI_x6G_centerCol td{overflow-wrap:break-word;word-break:normal}
+body[data-rs-wide] .pI_x6G_centerCol pre{white-space:pre-wrap;overflow-wrap:break-word}
+body[data-rs-wide] .pI_x6G_centerCol code{overflow-wrap:break-word}
+body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol video{max-width:100%;height:auto}
 @keyframes _rs_in{from{opacity:.4;transform:translateX(12px)}to{opacity:1;transform:none}}
 ._rs_header{height:54px;box-sizing:border-box;border-bottom:1px solid var(--dsw-alias-border-l2);display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 16px;flex:none}
 ._rs_title{font-size:14px;font-weight:600;color:var(--dsw-alias-label-primary);letter-spacing:.01em}
@@ -141,6 +150,37 @@ window.__ModuleLoader__.load({
       return [...values].sort((a, b) => basename(a).localeCompare(basename(b))).slice(0, 80);
     }
 
+    // The layout service intentionally exposes only open/close actions. Use the
+    // shipped details handle's React owner callbacks so this overlay can share
+    // the same clamped width state without replacing the built-in details pane.
+    function findDetailsResizeController() {
+      const handle = document.querySelector('[data-side="details"]');
+      if (!handle) return null;
+      const fiberKey = Object.keys(handle).find((key) => key.startsWith("__reactFiber$"));
+      let fiber = fiberKey ? handle[fiberKey] : null;
+      while (fiber) {
+        const props = fiber.memoizedProps;
+        if (props?.side === "details" && typeof props.onStart === "function" && typeof props.onDrag === "function" && typeof props.onEnd === "function") {
+          return { onStart: props.onStart, onDrag: props.onDrag, onEnd: props.onEnd };
+        }
+        fiber = fiber.return;
+      }
+      return null;
+    }
+
+    const DETAILS_MIN_WIDTH = 300;
+    const DETAILS_MAX_WIDTH = 520;
+    const PANEL_MAX_WIDTH = 860;
+    const CENTER_MIN_WIDTH = 320;
+    const getMaxPanelWidth = () => {
+      const overlay = document.querySelector("[data-shell-overlay]");
+      const leftSidebarWidth = Math.round(overlay?.parentElement?.firstElementChild?.getBoundingClientRect().width || 56);
+      return Math.max(360, Math.min(PANEL_MAX_WIDTH, window.innerWidth - leftSidebarWidth - CENTER_MIN_WIDTH));
+    };
+    const clampPanelWidth = (width) => {
+      return Math.max(DETAILS_MIN_WIDTH, Math.min(width, getMaxPanelWidth()));
+    };
+
     function RightSidebar({ useSessions, sessions, workspaces, layout, connection }) {
       const snapshot = useSessions((state) => state);
       const current = snapshot.current;
@@ -155,6 +195,7 @@ window.__ModuleLoader__.load({
       const [searchState, setSearchState] = React.useState("idle");
       const [filesTick, setFilesTick] = React.useState(0);
       const [panelWidth, setPanelWidth] = React.useState(360);
+      const [resizing, setResizing] = React.useState(false);
       const [browserInput, setBrowserInput] = React.useState(() => readPreference("dsh-right-sidebar:url", ""));
       const [browserHistory, setBrowserHistory] = React.useState(() => {
         const saved = readPreference("dsh-right-sidebar:url", "");
@@ -177,6 +218,8 @@ window.__ModuleLoader__.load({
       const browserEditingRef = React.useRef(false);
       const terminalIdRef = React.useRef(null);
       const terminalStartingRef = React.useRef(false);
+      const resizeCleanupRef = React.useRef(null);
+      const manualResizeRef = React.useRef(false);
 
       React.useEffect(() => {
         let live = true;
@@ -209,8 +252,12 @@ window.__ModuleLoader__.load({
         if (!detailsColumn) return;
         let frame = 0;
         const sync = () => {
+          if (manualResizeRef.current) return;
           const width = Math.round(detailsColumn.getBoundingClientRect().width);
-          if (width >= 300) setPanelWidth((currentWidth) => currentWidth === width ? currentWidth : width);
+          if (width >= DETAILS_MIN_WIDTH) setPanelWidth((currentWidth) => {
+            if (width >= DETAILS_MAX_WIDTH && currentWidth > DETAILS_MAX_WIDTH) return clampPanelWidth(currentWidth);
+            return currentWidth === width ? currentWidth : width;
+          });
         };
         const observer = new ResizeObserver(sync);
         observer.observe(detailsColumn);
@@ -222,6 +269,106 @@ window.__ModuleLoader__.load({
         followTransition();
         return () => { observer.disconnect(); cancelAnimationFrame(frame); };
       }, [open]);
+
+      React.useLayoutEffect(() => {
+        if (!open) return;
+        const overlay = document.querySelector("[data-shell-overlay]");
+        const detailsColumn = overlay?.previousElementSibling;
+        const centerColumn = detailsColumn?.previousElementSibling;
+        if (!detailsColumn || !centerColumn) return;
+        const detailsWidth = Math.round(detailsColumn.getBoundingClientRect().width);
+        const extraWidth = Math.max(0, Math.round(panelWidth - detailsWidth - 4));
+        centerColumn.style.marginRight = extraWidth ? `${extraWidth}px` : "";
+        if (extraWidth) document.body.setAttribute("data-rs-wide", "");
+        else document.body.removeAttribute("data-rs-wide");
+        return () => {
+          centerColumn.style.marginRight = "";
+          document.body.removeAttribute("data-rs-wide");
+        };
+      }, [open, panelWidth]);
+
+      const beginResize = React.useCallback((event) => {
+        if (event.button !== 0 && event.pointerType !== "touch") return;
+        const controller = findDetailsResizeController();
+        if (!controller) return;
+        event.preventDefault();
+        event.stopPropagation();
+        resizeCleanupRef.current?.();
+
+        const pointerId = event.pointerId;
+        const startX = event.clientX;
+        const resizeHandle = event.currentTarget;
+        const overlay = document.querySelector("[data-shell-overlay]");
+        const detailsColumn = overlay?.previousElementSibling;
+        const startDetailsWidth = Math.round(detailsColumn?.getBoundingClientRect().width || panelWidth);
+        const startPanelWidth = Math.round(resizeHandle.parentElement?.getBoundingClientRect().width || panelWidth) + 4;
+        let latestX = startX;
+        let frame = 0;
+        const previousUserSelect = document.body.style.userSelect;
+        const previousCursor = document.body.style.cursor;
+        document.body.style.userSelect = "none";
+        document.body.style.cursor = "col-resize";
+        document.body.setAttribute("data-rs-resizing", "");
+        postNativeBrowser({ action: "resizeStart" });
+        try {
+          resizeHandle.setPointerCapture(pointerId);
+        } catch {}
+        controller.onStart();
+        manualResizeRef.current = true;
+        setResizing(true);
+
+        const applyResize = () => {
+          const desiredWidth = clampPanelWidth(startPanelWidth - (latestX - startX));
+          const targetDetailsWidth = Math.max(DETAILS_MIN_WIDTH, Math.min(DETAILS_MAX_WIDTH, desiredWidth));
+          setPanelWidth(desiredWidth);
+          controller.onDrag(startDetailsWidth - targetDetailsWidth);
+        };
+        const flush = () => {
+          frame = 0;
+          applyResize();
+        };
+        const move = (moveEvent) => {
+          if (moveEvent.pointerId !== pointerId) return;
+          moveEvent.preventDefault();
+          latestX = moveEvent.clientX;
+          if (!frame) frame = requestAnimationFrame(flush);
+        };
+        const cleanup = () => {
+          window.removeEventListener("pointermove", move, true);
+          window.removeEventListener("mousemove", move, true);
+          window.removeEventListener("pointerup", finish, true);
+          window.removeEventListener("mouseup", finish, true);
+          window.removeEventListener("pointercancel", finish, true);
+          window.removeEventListener("blur", finish, true);
+          if (frame) cancelAnimationFrame(frame);
+          try {
+            if (resizeHandle.hasPointerCapture(pointerId)) resizeHandle.releasePointerCapture(pointerId);
+          } catch {}
+          document.body.style.userSelect = previousUserSelect;
+          document.body.style.cursor = previousCursor;
+          document.body.removeAttribute("data-rs-resizing");
+          postNativeBrowser({ action: "resizeEnd" });
+          manualResizeRef.current = false;
+          resizeCleanupRef.current = null;
+        };
+        const finish = (finishEvent) => {
+          if (typeof finishEvent?.pointerId === "number" && finishEvent.pointerId !== pointerId) return;
+          latestX = typeof finishEvent?.clientX === "number" ? finishEvent.clientX : latestX;
+          applyResize();
+          controller.onEnd();
+          cleanup();
+          setResizing(false);
+        };
+        window.addEventListener("pointermove", move, true);
+        window.addEventListener("mousemove", move, true);
+        window.addEventListener("pointerup", finish, true);
+        window.addEventListener("mouseup", finish, true);
+        window.addEventListener("pointercancel", finish, true);
+        window.addEventListener("blur", finish, true);
+        resizeCleanupRef.current = cleanup;
+      }, []);
+
+      React.useEffect(() => () => resizeCleanupRef.current?.(), []);
 
       React.useEffect(() => {
         const onKey = (event) => {
@@ -508,6 +655,7 @@ window.__ModuleLoader__.load({
       if (!open) return h("button", { className: "_rs_toggle", "aria-label": "打开多功能右边栏", title: "打开右边栏 · ⇧⌘F", onClick: toggle }, icon("panel", 17), h("span", { className: "_rs_hint" }, "搜索、浏览器与终端"));
 
       return h("aside", { className: "_rs_panel", style: { width: `${Math.max(296, panelWidth - 4)}px`, minWidth: "296px" }, "aria-label": "多功能右边栏" },
+        h("div", { className: "_rs_resize", role: "separator", "aria-label": "调整右边栏宽度", "aria-orientation": "vertical", "data-dragging": resizing || undefined, title: "左右拖动调整宽度", onPointerDown: beginResize }),
         h("div", { className: "_rs_header" }, h("div", { className: "_rs_title" }, "辅助栏"), h("button", { className: "_rs_iconBtn", "aria-label": "关闭多功能右边栏", title: "关闭右边栏 · ⇧⌘F", onClick: toggle }, icon("close", 16))),
         h("div", { className: "_rs_tabs", role: "tablist" },
           [["search", "搜索"], ["files", "文件"], ["overview", "概览"], ["browser", "浏览器"], ["terminal", "终端"]].map(([id, label]) => h("button", { key: id, role: "tab", className: "_rs_tab", "data-active": tab === id || undefined, "aria-selected": tab === id, onClick: () => chooseTab(id) }, label))

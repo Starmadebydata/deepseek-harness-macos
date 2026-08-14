@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Fixed
+
+- Keep the right-sidebar resize handle responsive when dragging over embedded browser content.
+- Allow the right sidebar to grow beyond the original 520px limit while preserving usable center-column space.
+- Reflow center-column text, tables, code, media, and the composer when the widened sidebar reduces the visible area.
+
 ## [0.2.0] - 2026-08-14
 
 ### Added

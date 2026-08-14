@@ -41,6 +41,7 @@ struct HarnessWebView: NSViewRepresentable {
         var lastReloadToken: UUID?
         weak var mainWebView: WKWebView?
         private var embeddedBrowser: WKWebView?
+        private var browserHiddenBeforeResize = true
 
         func attach(to webView: WKWebView) {
             mainWebView = webView
@@ -88,6 +89,11 @@ struct HarnessWebView: NSViewRepresentable {
                 embeddedBrowser?.reload()
             case "stop":
                 embeddedBrowser?.stopLoading()
+            case "resizeStart":
+                browserHiddenBeforeResize = embeddedBrowser?.isHidden ?? true
+                embeddedBrowser?.isHidden = true
+            case "resizeEnd":
+                embeddedBrowser?.isHidden = browserHiddenBeforeResize
             default:
                 break
             }
