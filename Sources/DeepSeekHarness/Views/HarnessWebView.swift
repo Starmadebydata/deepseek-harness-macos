@@ -16,6 +16,7 @@ struct HarnessWebView: NSViewRepresentable {
         configuration.websiteDataStore = .default()
         configuration.userContentController.add(context.coordinator, name: Coordinator.browserMessageName)
         configuration.userContentController.add(context.coordinator, name: Coordinator.mediaPickerMessageName)
+        configuration.userContentController.add(context.coordinator, name: Coordinator.savePlaylistMessageName)
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
@@ -36,12 +37,14 @@ struct HarnessWebView: NSViewRepresentable {
     static func dismantleNSView(_ nsView: WKWebView, coordinator: Coordinator) {
         nsView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.browserMessageName)
         nsView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.mediaPickerMessageName)
+        nsView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.savePlaylistMessageName)
         coordinator.destroyEmbeddedBrowser()
     }
 
     final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler {
         static let browserMessageName = "dshNativeBrowser"
         static let mediaPickerMessageName = "dshMediaPicker"
+        static let savePlaylistMessageName = "dshSavePlaylist"
 
         var lastReloadToken: UUID?
         weak var mainWebView: WKWebView?
@@ -83,9 +86,29 @@ struct HarnessWebView: NSViewRepresentable {
             )
         }
 
+        private func presentSavePlaylistPanel(content: String) {
+            guard let window = mainWebView?.window else { return }
+            let panel = NSSavePanel()
+            panel.title = "导出播放列表"
+            panel.prompt = "保存"
+            panel.nameFieldStringValue = "playlist.m3u"
+            panel.canCreateDirectories = true
+            panel.beginSheetModal(for: window) { response in
+                if response == .OK, let url = panel.url {
+                    try? content.write(to: url, atomically: true, encoding: .utf8)
+                }
+            }
+        }
+
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
             if message.name == Self.mediaPickerMessageName {
                 presentMediaPicker()
+                return
+            }
+            if message.name == Self.savePlaylistMessageName {
+                if let body = message.body as? [String: Any], let content = body["content"] as? String {
+                    presentSavePlaylistPanel(content: content)
+                }
                 return
             }
             guard message.name == Self.browserMessageName,

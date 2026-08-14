@@ -93,6 +93,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._mp_pick:hover{background:var(--dsw-alias-interactive-bg-hover)}
 ._mp_status{padding:14px 4px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:19px;flex:none}
 ._mp_plHead{display:flex;align-items:center;justify-content:space-between;margin-top:4px}
+._mp_plActions{display:flex;align-items:center;gap:4px}
 ._mp_plLabel{color:var(--dsw-alias-label-tertiary);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
 ._mp_clear{height:24px;padding:0 8px;border:0;border-radius:7px;background:transparent;color:var(--dsw-alias-label-tertiary);font:inherit;font-size:11px;cursor:pointer}
 ._mp_clear:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
@@ -119,6 +120,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._np_controls{display:flex;align-items:center;gap:2px;flex:none}
 ._np_btn{width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:var(--dsw-alias-label-secondary);display:grid;place-items:center;cursor:pointer}
 ._np_btn:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+._np_btn[data-active]{color:var(--dsw-alias-brand-primary)}
 ._np_play{width:36px;height:36px;background:var(--dsw-alias-brand-primary);color:#fff}
 ._np_play:hover{background:var(--dsw-alias-brand-primary);color:#fff}
 ._np_seek{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--dsw-alias-border-l2);border-radius:2px;outline:0;cursor:pointer}
@@ -148,6 +150,9 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       if (kind === "next") return h("svg", common, h("path", { d: "M18 5v14M5 5l10 7-10 7z" }));
       if (kind === "up") return h("svg", common, h("path", { d: "M12 5l-6 6h12z" }));
       if (kind === "down") return h("svg", common, h("path", { d: "M12 19l6-6H6z" }));
+      if (kind === "repeat") return h("svg", common, h("path", { d: "M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" }));
+      if (kind === "shuffle") return h("svg", common, h("path", { d: "M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5" }));
+      if (kind === "repeat-one") return h("svg", common, h("path", { d: "M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3M11 10h1.5v4" }));
       return h("svg", common, h("path", { d: "M5 4h14v16H5zM9 8h6M9 12h6M9 16h4" }));
     }
 
@@ -193,6 +198,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       return `${m}:${String(s).padStart(2, "0")}`;
     };
     const mediaPickerBridge = window.webkit?.messageHandlers?.dshMediaPicker;
+    const savePlaylistBridge = window.webkit?.messageHandlers?.dshSavePlaylist;
     const fetchMediaMetadata = async (path) => {
       try {
         const response = await fetch("/dsh-right-sidebar/media/metadata", {
@@ -305,13 +311,22 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       const resizeCleanupRef = React.useRef(null);
       const manualResizeRef = React.useRef(false);
       const restoreGuardRef = React.useRef(false);
-      const [mediaPlaylist, setMediaPlaylist] = React.useState([]);
-      const [mediaPath, setMediaPath] = React.useState("");
+      const [mediaPlaylist, setMediaPlaylist] = React.useState(() => {
+        try {
+          const parsed = JSON.parse(readPreference("dsh-right-sidebar:playlist", "[]"));
+          return Array.isArray(parsed) ? parsed : [];
+        } catch { return []; }
+      });
+      const [mediaPath, setMediaPath] = React.useState(() => readPreference("dsh-right-sidebar:media-path", ""));
       const [mediaInput, setMediaInput] = React.useState("");
       const [mediaHint, setMediaHint] = React.useState("");
       const [mediaPlaying, setMediaPlaying] = React.useState(false);
-      const [mediaTime, setMediaTime] = React.useState(0);
+      const [mediaTime, setMediaTime] = React.useState(() => {
+        const saved = Number(readPreference("dsh-right-sidebar:media-time", "0"));
+        return Number.isFinite(saved) && saved > 0 ? saved : 0;
+      });
       const [mediaDuration, setMediaDuration] = React.useState(0);
+      const [playMode, setPlayMode] = React.useState(() => readPreference("dsh-right-sidebar:play-mode", "order"));
       const audioRef = React.useRef(null);
       const videoRef = React.useRef(null);
       const vizCanvasRef = React.useRef(null);
@@ -321,6 +336,8 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       const currentMediaName = mediaPath ? mediaName(mediaPath) : "";
       const currentMediaItem = mediaPlaylist.find((item) => item.path === mediaPath);
       const currentMediaSub = [currentMediaItem?.artist, currentMediaItem?.album].filter(Boolean).join(" · ");
+      const modeTitle = playMode === "order" ? "顺序播放" : playMode === "shuffle" ? "随机播放" : "单曲循环";
+      const modeIcon = playMode === "order" ? "repeat" : playMode === "shuffle" ? "shuffle" : "repeat-one";
 
       const addMediaPaths = React.useCallback((paths) => {
         const valid = [];
@@ -392,10 +409,17 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 
       const playMediaNext = React.useCallback(() => {
         if (!mediaPlaylist.length) return;
+        if (playMode === "shuffle" && mediaPlaylist.length > 1) {
+          const cur = mediaPlaylist.findIndex((item) => item.path === mediaPath);
+          let idx = Math.floor(Math.random() * mediaPlaylist.length);
+          if (idx === cur) idx = (idx + 1) % mediaPlaylist.length;
+          playMedia(mediaPlaylist[idx].path);
+          return;
+        }
         const idx = mediaPlaylist.findIndex((item) => item.path === mediaPath);
         const next = mediaPlaylist[(idx + 1) % mediaPlaylist.length];
         if (next) playMedia(next.path);
-      }, [mediaPlaylist, mediaPath, playMedia]);
+      }, [mediaPlaylist, mediaPath, playMode, playMedia]);
 
       const playMediaPrev = React.useCallback(() => {
         if (!mediaPlaylist.length) return;
@@ -403,6 +427,37 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         const prev = mediaPlaylist[(idx - 1 + mediaPlaylist.length) % mediaPlaylist.length];
         if (prev) playMedia(prev.path);
       }, [mediaPlaylist, mediaPath, playMedia]);
+
+      const cyclePlayMode = React.useCallback(() => {
+        setPlayMode((mode) => (mode === "order" ? "shuffle" : mode === "shuffle" ? "loop-one" : "order"));
+      }, []);
+
+      const handleMediaEnded = React.useCallback(() => {
+        if (playMode === "loop-one") {
+          const el = isMediaVideo ? videoRef.current : audioRef.current;
+          if (el) { el.currentTime = 0; const p = el.play(); if (p) p.catch(() => {}); }
+          return;
+        }
+        playMediaNext();
+      }, [playMode, isMediaVideo, playMediaNext]);
+
+      const exportPlaylist = React.useCallback(() => {
+        if (!mediaPlaylist.length) { setMediaHint("播放列表为空，无法导出。"); return; }
+        const lines = ["#EXTM3U"];
+        for (const item of mediaPlaylist) {
+          const meta = [item.artist, item.album].filter(Boolean).join(" · ");
+          const title = item.title || item.name;
+          lines.push(`#EXTINF:0,${meta ? `${title} - ${meta}` : title}`);
+          lines.push(item.path);
+        }
+        const content = `${lines.join("\n")}\n`;
+        if (savePlaylistBridge) {
+          try { savePlaylistBridge.postMessage({ action: "save", content }); }
+          catch { setMediaHint("无法导出播放列表。"); }
+        } else {
+          setMediaHint("当前环境不支持导出，请在 App 中使用。");
+        }
+      }, [mediaPlaylist]);
 
       const toggleMedia = React.useCallback(() => {
         const el = isMediaVideo ? videoRef.current : audioRef.current;
@@ -433,9 +488,36 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         const el = mediaPath.toLowerCase().endsWith(".mp4") ? videoRef.current : audioRef.current;
         if (!el) return;
         el.load();
+        if (mediaTime > 0) {
+          const onMeta = () => {
+            try { el.currentTime = mediaTime; } catch {}
+            el.removeEventListener("loadedmetadata", onMeta);
+          };
+          el.addEventListener("loadedmetadata", onMeta);
+        }
         const p = el.play();
         if (p) p.catch(() => {});
       }, [mediaPath]);
+
+      React.useEffect(() => {
+        writePreference("dsh-right-sidebar:playlist", JSON.stringify(mediaPlaylist));
+        writePreference("dsh-right-sidebar:media-path", mediaPath || "");
+      }, [mediaPlaylist, mediaPath]);
+
+      React.useEffect(() => {
+        writePreference("dsh-right-sidebar:play-mode", playMode);
+      }, [playMode]);
+
+      React.useEffect(() => {
+        if (!mediaPath || !mediaPlaying) return;
+        const timer = setInterval(() => {
+          const el = isMediaVideo ? videoRef.current : audioRef.current;
+          if (el && Number.isFinite(el.currentTime) && el.currentTime > 0) {
+            writePreference("dsh-right-sidebar:media-time", String(el.currentTime));
+          }
+        }, 2000);
+        return () => clearInterval(timer);
+      }, [mediaPath, mediaPlaying, isMediaVideo]);
 
       React.useEffect(() => {
         if (tab !== "media" || !isMediaVideo) return;
@@ -944,10 +1026,13 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
           h("button", { className: "_mp_btn", onClick: submitMediaPath }, "添加")
         ),
         mediaHint ? h("div", { className: "_mp_status" }, mediaHint) : null,
-        mediaPath && isMediaVideo ? h("video", { ref: videoRef, key: mediaPath, className: "_mp_video", src: mediaStreamUrl(mediaPath), controls: true, onPlay: () => setMediaPlaying(true), onPause: () => setMediaPlaying(false), onTimeUpdate: (event) => setMediaTime(event.currentTarget.currentTime), onLoadedMetadata: (event) => setMediaDuration(event.currentTarget.duration), onEnded: playMediaNext }) : null,
+        mediaPath && isMediaVideo ? h("video", { ref: videoRef, key: mediaPath, className: "_mp_video", src: mediaStreamUrl(mediaPath), controls: true, onPlay: () => setMediaPlaying(true), onPause: () => setMediaPlaying(false), onTimeUpdate: (event) => setMediaTime(event.currentTarget.currentTime), onLoadedMetadata: (event) => setMediaDuration(event.currentTarget.duration), onEnded: handleMediaEnded }) : null,
         h("div", { className: "_mp_plHead" },
           h("span", { className: "_mp_plLabel" }, `播放列表 · ${mediaPlaylist.length}`),
-          mediaPlaylist.length ? h("button", { className: "_mp_clear", onClick: clearMediaList }, "清空") : null
+          h("div", { className: "_mp_plActions" },
+            mediaPlaylist.length ? h("button", { className: "_mp_clear", title: "导出为 M3U 播放列表", onClick: exportPlaylist }, "导出") : null,
+            mediaPlaylist.length ? h("button", { className: "_mp_clear", onClick: clearMediaList }, "清空") : null
+          )
         ),
         mediaPlaylist.length === 0 ? h("div", { className: "_mp_status" }, "还没有添加文件，点击上方按钮或输入路径选择要播放的 MP3 / MP4。") : null,
         h("div", { className: "_mp_list" }, mediaPlaylist.map((item, index) => h("div", {
@@ -977,7 +1062,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         h("div", { className: "_rs_body", "data-full": tab === "browser" || tab === "terminal" || undefined }, tab === "search" ? searchBody : tab === "files" ? filesBody : tab === "overview" ? overviewBody : tab === "browser" ? browserBody : tab === "terminal" ? terminalBody : mediaBody),
         h("div", { className: "_np_footer", "data-hidden": mediaPath ? undefined : "" },
           h("canvas", { ref: vizCanvasRef, className: "_np_viz", width: 800, height: 64 }),
-          h("audio", { ref: audioRef, style: { display: "none" }, src: !isMediaVideo && mediaPath ? mediaStreamUrl(mediaPath) : undefined, onPlay: () => setMediaPlaying(true), onPause: () => setMediaPlaying(false), onTimeUpdate: (event) => setMediaTime(event.currentTarget.currentTime), onLoadedMetadata: (event) => setMediaDuration(event.currentTarget.duration), onEnded: playMediaNext }),
+          h("audio", { ref: audioRef, style: { display: "none" }, src: !isMediaVideo && mediaPath ? mediaStreamUrl(mediaPath) : undefined, onPlay: () => setMediaPlaying(true), onPause: () => setMediaPlaying(false), onTimeUpdate: (event) => setMediaTime(event.currentTarget.currentTime), onLoadedMetadata: (event) => setMediaDuration(event.currentTarget.duration), onEnded: handleMediaEnded }),
           h("div", { className: "_np_row" },
             h("div", { className: "_np_info" },
               h("div", { className: "_np_title" }, currentMediaItem?.title || currentMediaName || "未播放"),
@@ -987,7 +1072,8 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
             h("div", { className: "_np_controls" },
               h("button", { className: "_np_btn", title: "上一首", onClick: playMediaPrev }, icon("prev", 16)),
               h("button", { className: "_np_btn _np_play", title: mediaPlaying ? "暂停" : "播放", onClick: toggleMedia }, icon(mediaPlaying ? "pause" : "play", 18)),
-              h("button", { className: "_np_btn", title: "下一首", onClick: playMediaNext }, icon("next", 16))
+              h("button", { className: "_np_btn", title: "下一首", onClick: playMediaNext }, icon("next", 16)),
+              h("button", { className: "_np_btn", "data-active": playMode !== "order" || undefined, title: modeTitle, onClick: cyclePlayMode }, icon(modeIcon, 16))
             )
           ),
           h("input", { className: "_np_seek", type: "range", min: 0, max: mediaDuration || 0, step: 0.1, value: mediaTime, onChange: (event) => seekMedia(event.target.value), "aria-label": "播放进度" })
