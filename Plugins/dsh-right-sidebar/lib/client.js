@@ -82,16 +82,6 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._rs_terminalStatus{color:#f0b35a}
 @media(max-width:820px){._rs_panel{width:min(320px,calc(100vw - 56px));min-width:280px;box-shadow:-18px 0 40px rgba(0,0,0,.12)}}
 @media(prefers-reduced-motion:reduce){._rs_panel{animation:none}}
-._mp_toggle{width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:var(--dsw-alias-label-secondary);display:grid;place-items:center;cursor:pointer}
-._mp_toggle:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
-._mp_toggle[data-active]{color:var(--dsw-alias-brand-primary)}
-._mp_panel{position:absolute;z-index:22;left:0;top:0;bottom:0;width:min(420px,calc(100vw - 96px));background:var(--dsw-alias-bg-base);border-right:1px solid var(--dsw-alias-border-l2);display:flex;flex-direction:column;box-shadow:12px 0 32px rgba(0,0,0,.06);animation:_mp_in .18s var(--ds-ease-in-out)}
-@keyframes _mp_in{from{opacity:.4;transform:translateX(-12px)}to{opacity:1;transform:none}}
-._mp_header{height:54px;box-sizing:border-box;border-bottom:1px solid var(--dsw-alias-border-l2);display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 16px;flex:none}
-._mp_title{font-size:14px;font-weight:600;color:var(--dsw-alias-label-primary)}
-._mp_iconBtn{width:30px;height:30px;border:0;border-radius:9px;background:transparent;color:var(--dsw-alias-label-secondary);display:grid;place-items:center;cursor:pointer}
-._mp_iconBtn:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
-._mp_body{min-height:0;flex:1;padding:14px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
 ._mp_dirRow{display:flex;gap:8px;flex:none}
 ._mp_input{min-width:0;flex:1;height:32px;box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;padding:0 9px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;outline:0}
 ._mp_input:focus{border-color:var(--dsw-alias-brand-primary)}
@@ -113,7 +103,6 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._mp_video{width:100%;max-height:260px;background:#000;border-radius:10px;display:block}
 ._mp_audio{width:100%;display:block}
 ._mp_now{margin-bottom:8px;color:var(--dsw-alias-label-secondary);font-size:12px;word-break:break-all}
-@media(prefers-reduced-motion:reduce){._mp_panel{animation:none}}
 `;
     const styleId = "dsh-right-sidebar/styles";
     if (typeof document !== "undefined" && !document.querySelector(`style[data-plugin-css="${styleId}"]`)) {
@@ -262,6 +251,58 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       const resizeCleanupRef = React.useRef(null);
       const manualResizeRef = React.useRef(false);
       const restoreGuardRef = React.useRef(false);
+      const [mediaPlaylist, setMediaPlaylist] = React.useState([]);
+      const [mediaPath, setMediaPath] = React.useState("");
+      const [mediaInput, setMediaInput] = React.useState("");
+      const [mediaHint, setMediaHint] = React.useState("");
+
+      const addMediaPaths = React.useCallback((paths) => {
+        const valid = [];
+        for (const raw of paths) {
+          const path = String(raw || "").trim();
+          if (!path || !isMediaFile(path)) continue;
+          valid.push({ path, name: basename(path) });
+        }
+        if (!valid.length) return;
+        setMediaPlaylist((items) => {
+          const seen = new Set(items.map((item) => item.path));
+          return [...items, ...valid.filter((item) => !seen.has(item.path))];
+        });
+        setMediaPath((current) => current || valid[0].path);
+      }, []);
+
+      const pickMedia = React.useCallback(() => {
+        if (!mediaPickerBridge) {
+          setMediaHint("当前环境不支持原生文件选择，请在下方输入文件路径。");
+          return;
+        }
+        setMediaHint("");
+        try { mediaPickerBridge.postMessage({ action: "pick" }); }
+        catch { setMediaHint("无法打开文件选择器。"); }
+      }, []);
+
+      React.useEffect(() => {
+        const onPicked = (event) => {
+          const paths = event.detail?.paths;
+          if (Array.isArray(paths) && paths.length) addMediaPaths(paths);
+        };
+        window.addEventListener("dsh-media-picked", onPicked);
+        return () => window.removeEventListener("dsh-media-picked", onPicked);
+      }, [addMediaPaths]);
+
+      const removeMediaPath = React.useCallback((path) => {
+        setMediaPlaylist((items) => items.filter((item) => item.path !== path));
+        setMediaPath((current) => (current === path ? "" : current));
+      }, []);
+
+      const submitMediaPath = () => {
+        const value = mediaInput.trim();
+        if (!value) return;
+        if (!isMediaFile(value)) { setMediaHint("仅支持 MP3 / MP4 文件。"); return; }
+        setMediaHint("");
+        addMediaPaths([value]);
+        setMediaInput("");
+      };
 
       React.useEffect(() => {
         let live = true;
@@ -708,131 +749,40 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         )
       );
 
+      const mediaBody = h(React.Fragment, null,
+        h("button", { className: "_mp_pick", onClick: pickMedia }, icon("music", 15), "选择音频或视频文件"),
+        h("div", { className: "_mp_dirRow" },
+          h("input", { className: "_mp_input", value: mediaInput, placeholder: "或输入文件完整路径，回车添加", spellCheck: false, onChange: (event) => setMediaInput(event.target.value), onKeyDown: (event) => { if (event.key === "Enter") submitMediaPath(); } }),
+          h("button", { className: "_mp_btn", onClick: submitMediaPath }, "添加")
+        ),
+        mediaHint ? h("div", { className: "_mp_status" }, mediaHint) : null,
+        mediaPlaylist.length === 0 ? h("div", { className: "_mp_status" }, "还没有添加文件，点击上方按钮或输入路径选择要播放的 MP3 / MP4。") : null,
+        h("div", { className: "_mp_list" }, mediaPlaylist.map((item) => h("div", {
+          key: item.path, className: "_mp_file", role: "button", tabIndex: 0, "data-active": item.path === mediaPath || undefined,
+          onClick: () => setMediaPath(item.path),
+          onKeyDown: (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setMediaPath(item.path); } }
+        },
+          h("span", { className: "_mp_fileMeta" }, item.name.toLowerCase().endsWith(".mp4") ? "视频" : "音频"),
+          h("span", { className: "_mp_fileName", title: item.path }, item.name),
+          h("button", { className: "_mp_fileRemove", "aria-label": `移除 ${item.name}`, title: "移除", onClick: (event) => { event.stopPropagation(); removeMediaPath(item.path); } }, icon("close", 13))
+        ))),
+        mediaPath ? h("div", { className: "_mp_player" },
+          h("div", { className: "_mp_now" }, mediaPath),
+          mediaPath.toLowerCase().endsWith(".mp4")
+            ? h("video", { key: mediaPath, className: "_mp_video", src: mediaStreamUrl(mediaPath), controls: true, autoPlay: true })
+            : h("audio", { key: mediaPath, className: "_mp_audio", src: mediaStreamUrl(mediaPath), controls: true, autoPlay: true })
+        ) : null
+      );
+
       if (!open) return h("button", { className: "_rs_toggle", "aria-label": "打开多功能右边栏", title: "打开右边栏 · ⇧⌘F", onClick: toggle }, icon("panel", 17), h("span", { className: "_rs_hint" }, "搜索、浏览器与终端"));
 
       return h("aside", { className: "_rs_panel", style: { width: `${Math.max(296, panelWidth - 4)}px`, minWidth: "296px" }, "aria-label": "多功能右边栏" },
         h("div", { className: "_rs_resize", role: "separator", "aria-label": "调整右边栏宽度", "aria-orientation": "vertical", "data-dragging": resizing || undefined, title: "左右拖动调整宽度", onPointerDown: beginResize }),
         h("div", { className: "_rs_header" }, h("div", { className: "_rs_title" }, "辅助栏"), h("button", { className: "_rs_iconBtn", "aria-label": "关闭多功能右边栏", title: "关闭右边栏 · ⇧⌘F", onClick: toggle }, icon("close", 16))),
         h("div", { className: "_rs_tabs", role: "tablist" },
-          [["search", "搜索"], ["files", "文件"], ["overview", "概览"], ["browser", "浏览器"], ["terminal", "终端"]].map(([id, label]) => h("button", { key: id, role: "tab", className: "_rs_tab", "data-active": tab === id || undefined, "aria-selected": tab === id, onClick: () => chooseTab(id) }, label))
+          [["search", "搜索"], ["files", "文件"], ["overview", "概览"], ["browser", "浏览器"], ["terminal", "终端"], ["media", "媒体"]].map(([id, label]) => h("button", { key: id, role: "tab", className: "_rs_tab", "data-active": tab === id || undefined, "aria-selected": tab === id, onClick: () => chooseTab(id) }, label))
         ),
-        h("div", { className: "_rs_body", "data-full": tab === "browser" || tab === "terminal" || undefined }, tab === "search" ? searchBody : tab === "files" ? filesBody : tab === "overview" ? overviewBody : tab === "browser" ? browserBody : terminalBody)
-      );
-    }
-
-    function useMediaOpen() {
-      const [open, setOpen] = React.useState(() => readPreference("dsh-right-sidebar:media-open", "0") === "1");
-      React.useEffect(() => {
-        const onChange = (event) => setOpen(event.detail === true);
-        window.addEventListener("dsh-media-open", onChange);
-        return () => window.removeEventListener("dsh-media-open", onChange);
-      }, []);
-      const toggle = React.useCallback(() => {
-        const next = !(readPreference("dsh-right-sidebar:media-open", "0") === "1");
-        writePreference("dsh-right-sidebar:media-open", next ? "1" : "0");
-        window.dispatchEvent(new CustomEvent("dsh-media-open", { detail: next }));
-      }, []);
-      return [open, toggle];
-    }
-
-    function MediaToggle() {
-      const [open, toggle] = useMediaOpen();
-      return h("button", {
-        className: "_mp_toggle",
-        "aria-label": "媒体播放器",
-        "data-active": open || undefined,
-        title: "媒体播放器",
-        onClick: toggle
-      }, icon("music", 16));
-    }
-
-    function MediaPlayer() {
-      const [open, toggle] = useMediaOpen();
-      const [playlist, setPlaylist] = React.useState([]);
-      const [currentPath, setCurrentPath] = React.useState("");
-      const [pathInput, setPathInput] = React.useState("");
-      const [hint, setHint] = React.useState("");
-
-      const addPaths = React.useCallback((paths) => {
-        const valid = [];
-        for (const raw of paths) {
-          const path = String(raw || "").trim();
-          if (!path || !isMediaFile(path)) continue;
-          valid.push({ path, name: basename(path) });
-        }
-        if (!valid.length) return;
-        setPlaylist((items) => {
-          const seen = new Set(items.map((item) => item.path));
-          return [...items, ...valid.filter((item) => !seen.has(item.path))];
-        });
-        setCurrentPath((current) => current || valid[0].path);
-      }, []);
-
-      const pick = React.useCallback(() => {
-        if (!mediaPickerBridge) {
-          setHint("当前环境不支持原生文件选择，请在下方输入文件路径。");
-          return;
-        }
-        setHint("");
-        try { mediaPickerBridge.postMessage({ action: "pick" }); }
-        catch { setHint("无法打开文件选择器。"); }
-      }, []);
-
-      React.useEffect(() => {
-        const onPicked = (event) => {
-          const paths = event.detail?.paths;
-          if (Array.isArray(paths) && paths.length) addPaths(paths);
-        };
-        window.addEventListener("dsh-media-picked", onPicked);
-        return () => window.removeEventListener("dsh-media-picked", onPicked);
-      }, [addPaths]);
-
-      const removePath = React.useCallback((path) => {
-        setPlaylist((items) => items.filter((item) => item.path !== path));
-        setCurrentPath((current) => (current === path ? "" : current));
-      }, []);
-
-      const submitPath = () => {
-        const value = pathInput.trim();
-        if (!value) return;
-        if (!isMediaFile(value)) { setHint("仅支持 MP3 / MP4 文件。"); return; }
-        setHint("");
-        addPaths([value]);
-        setPathInput("");
-      };
-
-      if (!open) return null;
-
-      const isVideo = currentPath.toLowerCase().endsWith(".mp4");
-      return h("aside", { className: "_mp_panel", "aria-label": "媒体播放器" },
-        h("div", { className: "_mp_header" },
-          h("div", { className: "_mp_title" }, "媒体播放器"),
-          h("button", { className: "_mp_iconBtn", "aria-label": "关闭媒体播放器", title: "关闭", onClick: toggle }, icon("close", 16))
-        ),
-        h("div", { className: "_mp_body" },
-          h("button", { className: "_mp_pick", onClick: pick }, icon("music", 15), "选择音频或视频文件"),
-          h("div", { className: "_mp_dirRow" },
-            h("input", { className: "_mp_input", value: pathInput, placeholder: "或输入文件完整路径，回车添加", spellCheck: false, onChange: (event) => setPathInput(event.target.value), onKeyDown: (event) => { if (event.key === "Enter") submitPath(); } }),
-            h("button", { className: "_mp_btn", onClick: submitPath }, "添加")
-          ),
-          hint ? h("div", { className: "_mp_status" }, hint) : null,
-          playlist.length === 0 ? h("div", { className: "_mp_status" }, "还没有添加文件，点击上方按钮或输入路径选择要播放的 MP3 / MP4。") : null,
-          h("div", { className: "_mp_list" }, playlist.map((item) => h("div", {
-            key: item.path, className: "_mp_file", role: "button", tabIndex: 0, "data-active": item.path === currentPath || undefined,
-            onClick: () => setCurrentPath(item.path),
-            onKeyDown: (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setCurrentPath(item.path); } }
-          },
-            h("span", { className: "_mp_fileMeta" }, item.name.toLowerCase().endsWith(".mp4") ? "视频" : "音频"),
-            h("span", { className: "_mp_fileName", title: item.path }, item.name),
-            h("button", { className: "_mp_fileRemove", "aria-label": `移除 ${item.name}`, title: "移除", onClick: (event) => { event.stopPropagation(); removePath(item.path); } }, icon("close", 13))
-          ))),
-          currentPath ? h("div", { className: "_mp_player" },
-            h("div", { className: "_mp_now" }, currentPath),
-            isVideo
-              ? h("video", { key: currentPath, className: "_mp_video", src: mediaStreamUrl(currentPath), controls: true, autoPlay: true })
-              : h("audio", { key: currentPath, className: "_mp_audio", src: mediaStreamUrl(currentPath), controls: true, autoPlay: true })
-          ) : null
-        )
+        h("div", { className: "_rs_body", "data-full": tab === "browser" || tab === "terminal" || undefined }, tab === "search" ? searchBody : tab === "files" ? filesBody : tab === "overview" ? overviewBody : tab === "browser" ? browserBody : tab === "terminal" ? terminalBody : mediaBody)
       );
     }
 
@@ -845,18 +795,6 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         order: 100,
         inject: () => ({ useSessions, sessions: ctx.sessions, workspaces: ctx.workspaces, layout: ctx.layout, connection: ctx.connection })
       }, RightSidebar));
-      ctx.slots.inject("sidebar.footer.action", () => ctx.slots.register({
-        name: "sidebar.footer.action",
-        id: "media-player-toggle",
-        order: 50,
-        inject: () => ({})
-      }, MediaToggle));
-      ctx.slots.inject("shell.overlay", () => ctx.slots.register({
-        name: "shell.overlay",
-        id: "media-player",
-        order: 90,
-        inject: () => ({})
-      }, MediaPlayer));
     }
 
     exports.apply = apply;
