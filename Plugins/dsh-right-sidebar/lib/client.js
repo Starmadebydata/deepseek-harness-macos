@@ -82,6 +82,34 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._rs_terminalStatus{color:#f0b35a}
 @media(max-width:820px){._rs_panel{width:min(320px,calc(100vw - 56px));min-width:280px;box-shadow:-18px 0 40px rgba(0,0,0,.12)}}
 @media(prefers-reduced-motion:reduce){._rs_panel{animation:none}}
+._mp_toggle{width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:var(--dsw-alias-label-secondary);display:grid;place-items:center;cursor:pointer}
+._mp_toggle:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+._mp_toggle[data-active]{color:var(--dsw-alias-brand-primary)}
+._mp_panel{position:absolute;z-index:22;left:0;top:0;bottom:0;width:min(420px,calc(100vw - 96px));background:var(--dsw-alias-bg-base);border-right:1px solid var(--dsw-alias-border-l2);display:flex;flex-direction:column;box-shadow:12px 0 32px rgba(0,0,0,.06);animation:_mp_in .18s var(--ds-ease-in-out)}
+@keyframes _mp_in{from{opacity:.4;transform:translateX(-12px)}to{opacity:1;transform:none}}
+._mp_header{height:54px;box-sizing:border-box;border-bottom:1px solid var(--dsw-alias-border-l2);display:flex;align-items:center;justify-content:space-between;padding:0 12px 0 16px;flex:none}
+._mp_title{font-size:14px;font-weight:600;color:var(--dsw-alias-label-primary)}
+._mp_iconBtn{width:30px;height:30px;border:0;border-radius:9px;background:transparent;color:var(--dsw-alias-label-secondary);display:grid;place-items:center;cursor:pointer}
+._mp_iconBtn:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+._mp_body{min-height:0;flex:1;padding:14px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+._mp_dirRow{display:flex;gap:8px;flex:none}
+._mp_input{min-width:0;flex:1;height:32px;box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;padding:0 9px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;outline:0}
+._mp_input:focus{border-color:var(--dsw-alias-brand-primary)}
+._mp_btn{height:32px;padding:0 12px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;cursor:pointer;flex:none}
+._mp_btn:hover{background:var(--dsw-alias-interactive-bg-hover)}
+._mp_btn:disabled{opacity:.5;cursor:default}
+._mp_status{padding:14px 4px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:19px;flex:none}
+._mp_list{display:flex;flex-direction:column;min-height:0;flex:1;overflow-y:auto}
+._mp_file{width:100%;box-sizing:border-box;border:0;border-bottom:1px solid var(--dsw-alias-border-l1);background:transparent;text-align:left;padding:9px 4px;color:inherit;cursor:pointer;display:flex;align-items:center;gap:8px}
+._mp_file:hover{background:var(--dsw-alias-interactive-bg-hover);border-radius:9px}
+._mp_file[data-active]{background:var(--dsw-alias-interactive-bg-active);border-radius:9px}
+._mp_fileName{min-width:0;flex:1;color:var(--dsw-alias-label-primary);font-size:12px;line-height:18px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+._mp_fileMeta{color:var(--dsw-alias-label-tertiary);font-size:11px;font-family:var(--ds-font-family-code)}
+._mp_player{flex:none;border-top:1px solid var(--dsw-alias-border-l1);padding-top:12px}
+._mp_video{width:100%;max-height:260px;background:#000;border-radius:10px;display:block}
+._mp_audio{width:100%;display:block}
+._mp_now{margin-bottom:8px;color:var(--dsw-alias-label-secondary);font-size:12px;word-break:break-all}
+@media(prefers-reduced-motion:reduce){._mp_panel{animation:none}}
 `;
     const styleId = "dsh-right-sidebar/styles";
     if (typeof document !== "undefined" && !document.querySelector(`style[data-plugin-css="${styleId}"]`)) {
@@ -100,6 +128,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       if (kind === "forward") return h("svg", common, h("path", { d: "m9 18 6-6-6-6" }));
       if (kind === "reload") return h("svg", common, h("path", { d: "M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" }));
       if (kind === "external") return h("svg", common, h("path", { d: "M14 5h5v5M19 5l-8 8M18 13v6H5V6h6" }));
+      if (kind === "music") return h("svg", common, h("path", { d: "M9 18V6l12-2v12" }), h("circle", { cx: 6, cy: 18, r: 3 }), h("circle", { cx: 18, cy: 16, r: 3 }));
       return h("svg", common, h("path", { d: "M5 4h14v16H5zM9 8h6M9 12h6M9 16h4" }));
     }
 
@@ -130,6 +159,14 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
     const postNativeBrowser = (message) => {
       try { nativeBrowserBridge?.postMessage(message); return Boolean(nativeBrowserBridge); }
       catch { return false; }
+    };
+
+    const mediaStreamUrl = (path) => `/dsh-right-sidebar/media/stream?path=${encodeURIComponent(path)}`;
+    const formatMediaSize = (bytes) => {
+      if (!Number.isFinite(bytes)) return "";
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
     };
 
     function collectVisibleFiles(cwd) {
@@ -683,6 +720,98 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       );
     }
 
+    function useMediaOpen() {
+      const [open, setOpen] = React.useState(() => readPreference("dsh-right-sidebar:media-open", "0") === "1");
+      React.useEffect(() => {
+        const onChange = (event) => setOpen(event.detail === true);
+        window.addEventListener("dsh-media-open", onChange);
+        return () => window.removeEventListener("dsh-media-open", onChange);
+      }, []);
+      const toggle = React.useCallback(() => {
+        const next = !(readPreference("dsh-right-sidebar:media-open", "0") === "1");
+        writePreference("dsh-right-sidebar:media-open", next ? "1" : "0");
+        window.dispatchEvent(new CustomEvent("dsh-media-open", { detail: next }));
+      }, []);
+      return [open, toggle];
+    }
+
+    function MediaToggle() {
+      const [open, toggle] = useMediaOpen();
+      return h("button", {
+        className: "_mp_toggle",
+        "aria-label": "媒体播放器",
+        "data-active": open || undefined,
+        title: "媒体播放器",
+        onClick: toggle
+      }, icon("music", 16));
+    }
+
+    function MediaPlayer({ useSessions }) {
+      const [open, toggle] = useMediaOpen();
+      const snapshot = useSessions((state) => state);
+      const cwd = snapshot.byId?.[snapshot.current]?.cwd || "";
+      const [dir, setDir] = React.useState("");
+      const [files, setFiles] = React.useState([]);
+      const [loading, setLoading] = React.useState(false);
+      const [error, setError] = React.useState("");
+      const [currentPath, setCurrentPath] = React.useState("");
+
+      const scan = React.useCallback(async (targetDir) => {
+        setLoading(true);
+        setError("");
+        try {
+          const response = await fetch("/dsh-right-sidebar/media/list", {
+            method: "POST",
+            headers: { "content-type": "application/json", "x-dsh-right-sidebar": "1" },
+            body: JSON.stringify({ dir: targetDir || "" })
+          });
+          const value = await response.json();
+          if (!response.ok || !value.ok) throw new Error(value.error || "扫描失败");
+          setDir(value.dir);
+          setFiles(Array.isArray(value.files) ? value.files : []);
+        } catch (err) {
+          setError(err?.message || String(err));
+        } finally {
+          setLoading(false);
+        }
+      }, []);
+
+      React.useEffect(() => {
+        if (open && !dir) scan(cwd || "");
+      }, [open, dir, cwd, scan]);
+
+      if (!open) return null;
+
+      const isVideo = currentPath.toLowerCase().endsWith(".mp4");
+      return h("aside", { className: "_mp_panel", "aria-label": "媒体播放器" },
+        h("div", { className: "_mp_header" },
+          h("div", { className: "_mp_title" }, "媒体播放器"),
+          h("button", { className: "_mp_iconBtn", "aria-label": "关闭媒体播放器", title: "关闭", onClick: toggle }, icon("close", 16))
+        ),
+        h("div", { className: "_mp_body" },
+          h("div", { className: "_mp_dirRow" },
+            h("input", { className: "_mp_input", value: dir, placeholder: "目录路径，回车扫描", spellCheck: false, onChange: (event) => setDir(event.target.value), onKeyDown: (event) => { if (event.key === "Enter") scan(dir); } }),
+            h("button", { className: "_mp_btn", onClick: () => scan(dir), disabled: loading }, loading ? "扫描中…" : "扫描")
+          ),
+          error ? h("div", { className: "_mp_status" }, error) : null,
+          !loading && !error && files.length === 0 ? h("div", { className: "_mp_status" }, "没有找到 MP3 / MP4 文件，可输入其它目录后扫描。") : null,
+          h("div", { className: "_mp_list" }, files.map((file) => h("button", {
+            key: file.path, className: "_mp_file", "data-active": file.path === currentPath || undefined,
+            onClick: () => setCurrentPath(file.path)
+          },
+            h("span", { className: "_mp_fileName" }, file.name),
+            h("span", { className: "_mp_fileMeta" }, formatMediaSize(file.size))
+          ))),
+          currentPath ? h("div", { className: "_mp_player" },
+            h("div", { className: "_mp_now" }, currentPath),
+            isVideo
+              ? h("video", { key: currentPath, className: "_mp_video", src: mediaStreamUrl(currentPath), controls: true, autoPlay: true })
+              : h("audio", { key: currentPath, className: "_mp_audio", src: mediaStreamUrl(currentPath), controls: true, autoPlay: true })
+          ) : null
+        )
+      );
+    }
+
     const inject = ["slots", "layout", "sessions", "workspaces", "connection"];
     function apply(ctx) {
       const useSessions = bindSnapshotSelector(ctx.sessions.list);
@@ -692,6 +821,18 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         order: 100,
         inject: () => ({ useSessions, sessions: ctx.sessions, workspaces: ctx.workspaces, layout: ctx.layout, connection: ctx.connection })
       }, RightSidebar));
+      ctx.slots.inject("sidebar.footer.action", () => ctx.slots.register({
+        name: "sidebar.footer.action",
+        id: "media-player-toggle",
+        order: 50,
+        inject: () => ({})
+      }, MediaToggle));
+      ctx.slots.inject("shell.overlay", () => ctx.slots.register({
+        name: "shell.overlay",
+        id: "media-player",
+        order: 90,
+        inject: () => ({ useSessions })
+      }, MediaPlayer));
     }
 
     exports.apply = apply;

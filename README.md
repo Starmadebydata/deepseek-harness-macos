@@ -25,6 +25,7 @@ It turns the local Harness server into a normal Mac app: double-click to launch,
 - Supports a true embedded right-sidebar browser with address navigation, back, forward, and reload
 - Includes a right-sidebar terminal rooted in the active workspace
 - Remembers the right-sidebar width across launches
+- Plays local MP3 audio and MP4 video from a left-sidebar media player
 - Supports the model providers available in the installed Harness version, including custom providers
 
 ## Requirements

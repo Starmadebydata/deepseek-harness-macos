@@ -7,6 +7,7 @@ All notable changes to this project are documented here.
 ### Added
 
 - Remember the right-sidebar width across app launches.
+- Add a left-sidebar media player that streams local MP3 and MP4 files.
 
 ## [0.2.1] - 2026-08-14
 
