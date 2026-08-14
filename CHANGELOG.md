@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Remember the right-sidebar width across app launches.
+
 ## [0.2.1] - 2026-08-14
 
 ### Fixed

@@ -194,7 +194,11 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       const [results, setResults] = React.useState([]);
       const [searchState, setSearchState] = React.useState("idle");
       const [filesTick, setFilesTick] = React.useState(0);
-      const [panelWidth, setPanelWidth] = React.useState(360);
+      const [panelWidth, setPanelWidth] = React.useState(() => {
+        const saved = Number(readPreference("dsh-right-sidebar:width", ""));
+        if (!Number.isFinite(saved) || saved <= 0) return 360;
+        return Math.round(clampPanelWidth(saved));
+      });
       const [resizing, setResizing] = React.useState(false);
       const [browserInput, setBrowserInput] = React.useState(() => readPreference("dsh-right-sidebar:url", ""));
       const [browserHistory, setBrowserHistory] = React.useState(() => {
@@ -220,6 +224,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       const terminalStartingRef = React.useRef(false);
       const resizeCleanupRef = React.useRef(null);
       const manualResizeRef = React.useRef(false);
+      const restoreGuardRef = React.useRef(false);
 
       React.useEffect(() => {
         let live = true;
@@ -245,6 +250,18 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         if (open) layout.openDetails();
       }, []);
 
+      // Restore the saved sidebar width and keep the details-column sync from
+      // shrinking it back while the open transition settles.
+      React.useLayoutEffect(() => {
+        if (!open) return;
+        const saved = Number(readPreference("dsh-right-sidebar:width", ""));
+        if (!Number.isFinite(saved) || saved <= 0) return;
+        restoreGuardRef.current = true;
+        setPanelWidth(Math.round(clampPanelWidth(saved)));
+        const timer = setTimeout(() => { restoreGuardRef.current = false; }, 500);
+        return () => { clearTimeout(timer); restoreGuardRef.current = false; };
+      }, [open]);
+
       React.useLayoutEffect(() => {
         if (!open) return;
         const overlay = document.querySelector("[data-shell-overlay]");
@@ -252,7 +269,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         if (!detailsColumn) return;
         let frame = 0;
         const sync = () => {
-          if (manualResizeRef.current) return;
+          if (manualResizeRef.current || restoreGuardRef.current) return;
           const width = Math.round(detailsColumn.getBoundingClientRect().width);
           if (width >= DETAILS_MIN_WIDTH) setPanelWidth((currentWidth) => {
             if (width >= DETAILS_MAX_WIDTH && currentWidth > DETAILS_MAX_WIDTH) return clampPanelWidth(currentWidth);
@@ -322,6 +339,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
           const targetDetailsWidth = Math.max(DETAILS_MIN_WIDTH, Math.min(DETAILS_MAX_WIDTH, desiredWidth));
           setPanelWidth(desiredWidth);
           controller.onDrag(startDetailsWidth - targetDetailsWidth);
+          return desiredWidth;
         };
         const flush = () => {
           frame = 0;
@@ -354,7 +372,8 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         const finish = (finishEvent) => {
           if (typeof finishEvent?.pointerId === "number" && finishEvent.pointerId !== pointerId) return;
           latestX = typeof finishEvent?.clientX === "number" ? finishEvent.clientX : latestX;
-          applyResize();
+          const finalWidth = applyResize();
+          writePreference("dsh-right-sidebar:width", String(Math.round(finalWidth)));
           controller.onEnd();
           cleanup();
           setResizing(false);
