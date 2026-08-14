@@ -5,6 +5,7 @@ MODE="${1:-run}"
 APP_NAME="DeepSeek Harness"
 PROCESS_NAME="DeepSeekHarness"
 BUNDLE_ID="com.elliotguo.deepseek-harness"
+APP_VERSION="0.2.0"
 MIN_SYSTEM_VERSION="14.0"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -16,6 +17,11 @@ APP_RESOURCES="$APP_CONTENTS/Resources"
 APP_BINARY="$APP_MACOS/$PROCESS_NAME"
 INFO_PLIST="$APP_CONTENTS/Info.plist"
 ICON_FILE="$APP_RESOURCES/AppIcon.icns"
+
+if [[ "$MODE" == "--install-plugin" || "$MODE" == "install-plugin" ]]; then
+  "$ROOT_DIR/script/install_sidebar_plugin.sh"
+  exit 0
+fi
 
 pkill -x "$PROCESS_NAME" >/dev/null 2>&1 || true
 
@@ -51,9 +57,9 @@ cat >"$INFO_PLIST" <<PLIST
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>
-  <string>0.1.0</string>
+  <string>$APP_VERSION</string>
   <key>CFBundleVersion</key>
-  <string>1</string>
+  <string>2</string>
   <key>LSMinimumSystemVersion</key>
   <string>$MIN_SYSTEM_VERSION</string>
   <key>NSHighResolutionCapable</key>
@@ -72,20 +78,25 @@ open_app() {
 
 case "$MODE" in
   run)
+    "$ROOT_DIR/script/install_sidebar_plugin.sh"
     open_app
     ;;
   --debug|debug)
+    "$ROOT_DIR/script/install_sidebar_plugin.sh"
     lldb -- "$APP_BINARY"
     ;;
   --logs|logs)
+    "$ROOT_DIR/script/install_sidebar_plugin.sh"
     open_app
     /usr/bin/log stream --info --style compact --predicate "process == \"$PROCESS_NAME\""
     ;;
   --telemetry|telemetry)
+    "$ROOT_DIR/script/install_sidebar_plugin.sh"
     open_app
     /usr/bin/log stream --info --style compact --predicate "subsystem == \"$BUNDLE_ID\""
     ;;
   --verify|verify)
+    "$ROOT_DIR/script/install_sidebar_plugin.sh"
     open_app
     for _ in {1..20}; do
       if pgrep -x "$PROCESS_NAME" >/dev/null; then
@@ -100,7 +111,7 @@ case "$MODE" in
     echo "$APP_BUNDLE"
     ;;
   *)
-    echo "用法：$0 [run|--build|--debug|--logs|--telemetry|--verify]" >&2
+    echo "用法：$0 [run|--build|--install-plugin|--debug|--logs|--telemetry|--verify]" >&2
     exit 2
     ;;
 esac

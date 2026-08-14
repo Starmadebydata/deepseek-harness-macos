@@ -1,5 +1,7 @@
 # DeepSeek Harness macOS 客户端
 
+当前版本：**0.2.0** · [版本更新日志](CHANGELOG.md)
+
 这是官方 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI 的轻量原生 macOS 外壳。
 
 它把本地 Harness 服务变成一个普通 Mac 应用：双击启动，在独立窗口中使用，并自动启动或连接本机的 `dsh`。
@@ -17,7 +19,9 @@
 - 没有现成服务时，自动启动本机安装的 `dsh`
 - 退出应用时，只停止由应用自己启动的服务
 - 沿用 Harness 原有的工作区、会话、模型和凭据存储
-- 外部链接交给默认浏览器打开
+- 主界面中的普通外部链接交给默认浏览器打开
+- 右栏提供真正内嵌的浏览器，支持地址访问、前进、后退和刷新
+- 右栏提供从当前工作区启动的终端
 - 支持当前 Harness 版本提供的模型服务与自定义接口
 
 ## 环境要求
@@ -40,6 +44,8 @@ cd deepseek-harness-macos
 ./script/build_and_run.sh
 ```
 
+正常启动命令会同时把仓库内置的右栏插件安装到本机 Harness 的 `web` 配置中。如果该配置尚未生成，请先运行一次 `dsh web`，停止后再重新执行上面的命令。
+
 生成的应用位于：
 
 ```text
@@ -52,6 +58,12 @@ dist/DeepSeek Harness.app
 ./script/build_and_run.sh --build
 ```
 
+只安装或更新右栏插件：
+
+```bash
+./script/build_and_run.sh --install-plugin
+```
+
 运行测试：
 
 ```bash
@@ -62,6 +74,12 @@ swift test
 
 模型配置仍由 DeepSeek Harness 管理。打开“设置 → 模型”，可以配置内置服务或添加自定义接口。API 密钥由 Harness 保存，不会写入本仓库。
 
+## 多功能右栏
+
+仓库内置的 `dsh-right-sidebar` 插件提供会话搜索、最近文件、会话概览、内置浏览器和工作区终端。安装脚本只会补充该插件所需的本地 `web` 配置，不会读取或复制 API 密钥。
+
+终端命令只在用户主动输入后运行，权限与当前 Mac 用户一致。
+
 ## 工作方式
 
 应用启动时检查 `http://127.0.0.1:3080`：
@@ -69,6 +87,8 @@ swift test
 1. 如果 Harness 已经运行，应用直接连接，不接管现有进程。
 2. 如果没有运行，应用寻找本机 `dsh`，并启动本地服务。
 3. 退出时，只有应用自己启动的服务会被停止。
+
+版本历史见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 分发说明
 
