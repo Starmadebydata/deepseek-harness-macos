@@ -1,6 +1,6 @@
 # DeepSeek Harness for macOS
 
-Current release: **0.2.0** · [Changelog](CHANGELOG.md)
+Current release: **0.2.1** · [Changelog](CHANGELOG.md)
 
 A lightweight native macOS wrapper for the official [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI.
 

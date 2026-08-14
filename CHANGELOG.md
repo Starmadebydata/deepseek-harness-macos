@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-08-14
+
 ### Fixed
 
 - Keep the right-sidebar resize handle responsive when dragging over embedded browser content.
