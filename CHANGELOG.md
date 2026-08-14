@@ -9,6 +9,10 @@ All notable changes to this project are documented here.
 - Remember the right-sidebar width across app launches.
 - Add a left-sidebar media player that streams local MP3 and MP4 files.
 
+### Changed
+
+- The app now stops the local `dsh` web service on quit and takes over its lifecycle on launch.
+
 ## [0.2.1] - 2026-08-14
 
 ### Fixed

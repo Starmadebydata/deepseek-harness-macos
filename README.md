@@ -19,7 +19,7 @@ It turns the local Harness server into a normal Mac app: double-click to launch,
 - Native SwiftUI window with an embedded Harness Web UI
 - Connects to an existing Harness server at `127.0.0.1:3080`
 - Starts the locally installed `dsh` server when one is not already running
-- Stops only the server process started by the app itself
+- Stops the local `dsh` web service when the app quits
 - Keeps Harness workspaces, sessions, model providers, and credentials in their original storage
 - Keeps ordinary main-view external links in the default browser
 - Supports a true embedded right-sidebar browser with address navigation, back, forward, and reload
@@ -88,9 +88,9 @@ Terminal commands run locally with the same user permissions as the app and are 
 
 On launch, the app checks `http://127.0.0.1:3080`:
 
-1. If Harness is already running, the app connects without taking ownership of that process.
+1. If Harness is already running, the app connects and takes over its lifecycle.
 2. Otherwise, it finds the installed `dsh` executable and starts `dsh web` locally.
-3. On quit, it terminates the server only when that server was started by the app.
+3. On quit, it stops the local `dsh` web service.
 
 Release history is available in [CHANGELOG.md](CHANGELOG.md).
 

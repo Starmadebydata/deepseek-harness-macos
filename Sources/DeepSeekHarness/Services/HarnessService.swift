@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 import Observation
 
@@ -19,8 +20,8 @@ final class HarnessService {
 
         state = .connecting
         if await serverResponds() {
-            ownsServer = false
-            state = .ready(ownsServer: false)
+            ownsServer = true
+            state = .ready(ownsServer: true)
             reloadToken = UUID()
             return
         }
@@ -52,27 +53,50 @@ final class HarnessService {
             try? await Task.sleep(for: .milliseconds(250))
         }
 
-        stopOwnedServer()
+        stopServer()
         state = .failed("等待 DeepSeek Harness 启动超时，请重新连接。")
     }
 
     func restart() async {
         if ownsServer {
-            stopOwnedServer()
+            stopServer()
             try? await Task.sleep(for: .milliseconds(350))
         }
         state = .idle
         await start()
     }
 
-    func stopOwnedServer() {
-        guard ownsServer, let process else { return }
-        if process.isRunning {
-            process.terminate()
-        }
-        self.process = nil
-        outputPipe = nil
+    func stopServer() {
+        guard ownsServer else { return }
         ownsServer = false
+        if let process, process.isRunning {
+            process.terminate()
+            self.process = nil
+            outputPipe = nil
+            return
+        }
+        if let pid = Self.listeningPID(port: 3080) {
+            kill(pid, SIGTERM)
+        }
+    }
+
+    private static func listeningPID(port: Int) -> pid_t? {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/sbin/lsof")
+        process.arguments = ["-nP", "-iTCP:\(port)", "-sTCP:LISTEN", "-t"]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = Pipe()
+        do {
+            try process.run()
+            process.waitUntilExit()
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            let text = String(data: data, encoding: .utf8) ?? ""
+            let first = text.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: "\n").first
+            return first.flatMap { pid_t(String($0)) }
+        } catch {
+            return nil
+        }
     }
 
     private func launch(executable: URL) throws {
