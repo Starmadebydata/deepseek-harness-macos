@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Add a Spotify entry to the media tab: paste a share link to open the matching track, album, playlist, artist, or podcast in the right-sidebar browser, with a home-page button for signing in and full playback.
+
 ## [0.3.0] - 2026-08-15
 
 ### Added

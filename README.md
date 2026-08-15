@@ -26,6 +26,7 @@ It turns the local Harness server into a normal Mac app: double-click to launch,
 - Includes a right-sidebar terminal rooted in the active workspace
 - Remembers the right-sidebar width across launches
 - Plays local MP3 audio and MP4 video from a right-sidebar media player
+- Opens Spotify tracks, albums, playlists, and podcasts in the right-sidebar browser from a pasted share link
 - Supports the model providers available in the installed Harness version, including custom providers
 
 ## Requirements

@@ -125,6 +125,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._np_play:hover{background:var(--dsw-alias-brand-primary);color:#fff}
 ._np_seek{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--dsw-alias-border-l2);border-radius:2px;outline:0;cursor:pointer}
 ._np_seek::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:var(--dsw-alias-brand-primary);cursor:pointer}
+._sp_section{margin-top:18px;padding-top:14px;border-top:1px solid var(--dsw-alias-border-l1)}
 `;
     const styleId = "dsh-right-sidebar/styles";
     if (typeof document !== "undefined" && !document.querySelector(`style[data-plugin-css="${styleId}"]`)) {
@@ -217,6 +218,24 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         return {};
       }
     };
+
+    const SPOTIFY_TYPES = ["track", "album", "playlist", "artist", "episode", "show"];
+    const parseSpotifyLink = (value) => {
+      const input = String(value || "").trim();
+      if (!input) return null;
+      const uri = /^spotify:(track|album|playlist|artist|episode|show):([A-Za-z0-9]+)/i.exec(input);
+      if (uri) return { type: uri[1].toLowerCase(), id: uri[2] };
+      try {
+        const url = new URL(/^[a-z]+:\/\//i.test(input) ? input : `https://${input}`);
+        if (!/(^|\.)spotify\.com$/i.test(url.hostname)) return null;
+        const match = /(?:\/intl-[a-z]{2})?\/(track|album|playlist|artist|episode|show)\/([A-Za-z0-9]+)/i.exec(url.pathname);
+        if (!match || !SPOTIFY_TYPES.includes(match[1].toLowerCase())) return null;
+        return { type: match[1].toLowerCase(), id: match[2] };
+      } catch {
+        return null;
+      }
+    };
+    const spotifyPageUrl = (parsed) => `https://open.spotify.com/${parsed.type}/${parsed.id}`;
 
     function collectVisibleFiles(cwd) {
       const values = new Set();
@@ -327,6 +346,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       });
       const [mediaDuration, setMediaDuration] = React.useState(0);
       const [playMode, setPlayMode] = React.useState(() => readPreference("dsh-right-sidebar:play-mode", "order"));
+      const [spotifyLink, setSpotifyLink] = React.useState(() => readPreference("dsh-right-sidebar:spotify", ""));
       const audioRef = React.useRef(null);
       const videoRef = React.useRef(null);
       const vizCanvasRef = React.useRef(null);
@@ -507,6 +527,10 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       React.useEffect(() => {
         writePreference("dsh-right-sidebar:play-mode", playMode);
       }, [playMode]);
+
+      React.useEffect(() => {
+        writePreference("dsh-right-sidebar:spotify", spotifyLink.trim());
+      }, [spotifyLink]);
 
       React.useEffect(() => {
         if (!mediaPath || !mediaPlaying) return;
@@ -1019,6 +1043,29 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         )
       );
 
+      const openSpotifyPage = (url) => {
+        chooseTab("browser");
+        navigate(url);
+      };
+      const spotifyConfig = parseSpotifyLink(spotifyLink);
+      const openSpotify = () => {
+        if (spotifyConfig) openSpotifyPage(spotifyPageUrl(spotifyConfig));
+      };
+      const spotifySection = h("div", { className: "_sp_section" },
+        h("div", { className: "_mp_plHead" },
+          h("span", { className: "_mp_plLabel" }, "Spotify 在线音乐"),
+          h("div", { className: "_mp_plActions" },
+            h("button", { className: "_mp_clear", title: "在右栏浏览器打开 Spotify 首页并登录", onClick: () => openSpotifyPage("https://open.spotify.com/") }, "打开首页")
+          )
+        ),
+        h("div", { className: "_mp_dirRow" },
+          h("input", { className: "_mp_input", value: spotifyLink, placeholder: "粘贴 Spotify 单曲 / 专辑 / 歌单 / 播客链接", spellCheck: false, onChange: (event) => setSpotifyLink(event.target.value), onKeyDown: (event) => { if (event.key === "Enter") openSpotify(); } }),
+          spotifyLink.trim() ? h("button", { className: "_mp_btn", onClick: () => setSpotifyLink("") }, "清除") : null,
+          h("button", { className: "_mp_btn", disabled: !spotifyConfig, onClick: openSpotify }, "打开")
+        ),
+        h("div", { className: "_mp_status" }, spotifyLink.trim() && !spotifyConfig ? "无法识别这个链接，请粘贴 Spotify 的单曲、专辑、歌单或播客分享链接。" : "粘贴链接点「打开」，在右栏浏览器中用 Spotify 网页版播放。首次使用请点「打开首页」登录账号，之后即可完整播放。")
+      );
+
       const mediaBody = h("div", { className: "_mp_body" },
         h("button", { className: "_mp_pick", onClick: pickMedia }, icon("music", 15), "选择音频或视频文件"),
         h("div", { className: "_mp_dirRow" },
@@ -1048,7 +1095,8 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
           h("button", { className: "_mp_fileRemove", "aria-label": `上移 ${item.name}`, title: "上移", onClick: (event) => { event.stopPropagation(); moveMediaItem(index, -1); } }, icon("up", 13)),
           h("button", { className: "_mp_fileRemove", "aria-label": `下移 ${item.name}`, title: "下移", onClick: (event) => { event.stopPropagation(); moveMediaItem(index, 1); } }, icon("down", 13)),
           h("button", { className: "_mp_fileRemove", "aria-label": `移除 ${item.name}`, title: "移除", onClick: (event) => { event.stopPropagation(); removeMediaPath(item.path); } }, icon("close", 13))
-        )))
+        ))),
+        spotifySection
       );
 
       if (!open) return h("button", { className: "_rs_toggle", "aria-label": "打开多功能右边栏", title: "打开右边栏 · ⇧⌘F", onClick: toggle }, icon("panel", 17), h("span", { className: "_rs_hint" }, "搜索、浏览器与终端"));
