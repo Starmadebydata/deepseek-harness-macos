@@ -27,6 +27,9 @@ It turns the local Harness server into a normal Mac app: double-click to launch,
 - Remembers the right-sidebar width across launches
 - Plays local MP3 audio and MP4 video from a right-sidebar media player
 - Opens Spotify tracks, albums, playlists, and podcasts in the right-sidebar browser from a pasted share link
+- Reads local EPUB and PDF e-books in a right-sidebar reader with folder import
+- Shows the Douyin web player in a phone-style frame in the right sidebar
+- Lets users choose which tabs appear in the right sidebar from Settings → General
 - Supports the model providers available in the installed Harness version, including custom providers
 
 ## Requirements

@@ -17,6 +17,7 @@ struct HarnessWebView: NSViewRepresentable {
         configuration.userContentController.add(context.coordinator, name: Coordinator.browserMessageName)
         configuration.userContentController.add(context.coordinator, name: Coordinator.mediaPickerMessageName)
         configuration.userContentController.add(context.coordinator, name: Coordinator.savePlaylistMessageName)
+        configuration.userContentController.add(context.coordinator, name: Coordinator.ebookPickerMessageName)
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
@@ -38,6 +39,7 @@ struct HarnessWebView: NSViewRepresentable {
         nsView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.browserMessageName)
         nsView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.mediaPickerMessageName)
         nsView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.savePlaylistMessageName)
+        nsView.configuration.userContentController.removeScriptMessageHandler(forName: Coordinator.ebookPickerMessageName)
         coordinator.destroyEmbeddedBrowser()
     }
 
@@ -45,6 +47,7 @@ struct HarnessWebView: NSViewRepresentable {
         static let browserMessageName = "dshNativeBrowser"
         static let mediaPickerMessageName = "dshMediaPicker"
         static let savePlaylistMessageName = "dshSavePlaylist"
+        static let ebookPickerMessageName = "dshEbookPicker"
 
         var lastReloadToken: UUID?
         weak var mainWebView: WKWebView?
@@ -86,6 +89,32 @@ struct HarnessWebView: NSViewRepresentable {
             )
         }
 
+        private func presentEbookPicker() {
+            guard let window = mainWebView?.window else { return }
+            let panel = NSOpenPanel()
+            panel.title = "导入电子书"
+            panel.prompt = "导入"
+            panel.message = "选择 EPUB / PDF 文件，或选择一个文件夹批量导入其中的电子书。"
+            panel.allowsMultipleSelection = true
+            panel.canChooseDirectories = true
+            panel.canChooseFiles = true
+            panel.allowedContentTypes = [.pdf, .epub]
+            panel.beginSheetModal(for: window) { [weak self] response in
+                guard let self else { return }
+                let paths = response == .OK ? panel.urls.map { $0.path } : []
+                self.sendEbookPicked(paths: paths)
+            }
+        }
+
+        private func sendEbookPicked(paths: [String]) {
+            guard let mainWebView else { return }
+            guard let data = try? JSONSerialization.data(withJSONObject: ["paths": paths]),
+                  let json = String(data: data, encoding: .utf8) else { return }
+            mainWebView.evaluateJavaScript(
+                "window.dispatchEvent(new CustomEvent('dsh-ebook-picked',{detail:\(json)}));"
+            )
+        }
+
         private func presentSavePlaylistPanel(content: String) {
             guard let window = mainWebView?.window else { return }
             let panel = NSSavePanel()
@@ -103,6 +132,10 @@ struct HarnessWebView: NSViewRepresentable {
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
             if message.name == Self.mediaPickerMessageName {
                 presentMediaPicker()
+                return
+            }
+            if message.name == Self.ebookPickerMessageName {
+                presentEbookPicker()
                 return
             }
             if message.name == Self.savePlaylistMessageName {
@@ -186,6 +219,15 @@ struct HarnessWebView: NSViewRepresentable {
                 width: max(1, min(width, mainWebView.bounds.width - x)),
                 height: max(1, min(height, mainWebView.bounds.height - max(0, frameY)))
             )
+            let radius = (body["radius"] as? Double) ?? 0
+            if radius > 0 {
+                browser.wantsLayer = true
+                browser.layer?.cornerRadius = radius
+                browser.layer?.masksToBounds = true
+            } else {
+                browser.layer?.cornerRadius = 0
+                browser.layer?.masksToBounds = false
+            }
         }
 
         private func sendBrowserState(error: String? = nil) {

@@ -28,8 +28,9 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._rs_title{font-size:14px;font-weight:600;color:var(--dsw-alias-label-primary);letter-spacing:.01em}
 ._rs_iconBtn{width:30px;height:30px;border:0;border-radius:9px;background:transparent;color:var(--dsw-alias-label-secondary);display:grid;place-items:center;cursor:pointer}
 ._rs_iconBtn:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
-._rs_tabs{height:42px;padding:0 12px;border-bottom:1px solid var(--dsw-alias-border-l1);display:flex;align-items:end;gap:18px;flex:none}
-._rs_tab{height:42px;padding:0 2px;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--dsw-alias-label-tertiary);font:inherit;font-size:13px;cursor:pointer}
+._rs_tabs{height:42px;padding:0 12px;border-bottom:1px solid var(--dsw-alias-border-l1);display:flex;align-items:end;gap:14px;flex:none;overflow-x:auto;scrollbar-width:none}
+._rs_tabs::-webkit-scrollbar{display:none}
+._rs_tab{height:42px;padding:0 2px;flex:none;white-space:nowrap;border:0;border-bottom:2px solid transparent;background:transparent;color:var(--dsw-alias-label-tertiary);font:inherit;font-size:13px;cursor:pointer}
 ._rs_tab:hover{color:var(--dsw-alias-label-secondary)}
 ._rs_tab[data-active]{color:var(--dsw-alias-label-primary);border-bottom-color:var(--dsw-alias-brand-primary)}
 ._rs_body{min-height:0;flex:1;overflow-y:auto;padding:14px 14px 24px}
@@ -126,6 +127,35 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._np_seek{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:var(--dsw-alias-border-l2);border-radius:2px;outline:0;cursor:pointer}
 ._np_seek::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:var(--dsw-alias-brand-primary);cursor:pointer}
 ._sp_section{margin-top:18px;padding-top:14px;border-top:1px solid var(--dsw-alias-border-l1)}
+._eb_shelf{min-height:0;flex:1;overflow-y:auto;padding:14px 14px 24px;display:flex;flex-direction:column;gap:12px}
+._eb_reader{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden}
+._eb_toolbar{height:44px;flex:none;border-bottom:1px solid var(--dsw-alias-border-l1);display:flex;align-items:center;gap:2px;padding:0 8px}
+._eb_title{min-width:0;flex:1;color:var(--dsw-alias-label-primary);font-size:13px;font-weight:600;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;padding:0 6px}
+._eb_chapters{max-height:45%;overflow:auto;border-bottom:1px solid var(--dsw-alias-border-l1);background:var(--dsw-alias-bg-layer-1);padding:6px;flex:none}
+._eb_chapter{display:block;width:100%;text-align:left;border:0;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12px;line-height:20px;padding:5px 8px;border-radius:7px;cursor:pointer;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+._eb_chapter:hover{background:var(--dsw-alias-interactive-bg-hover)}
+._eb_chapter[data-active]{background:var(--dsw-alias-interactive-bg-active);color:var(--dsw-alias-brand-primary)}
+._eb_content{min-height:0;flex:1;overflow:hidden;background:#fff}
+._eb_frame{width:100%;height:100%;border:0;display:block}
+._eb_scale{flex:none;min-width:44px;text-align:center;color:var(--dsw-alias-label-secondary);font-size:11px;font-family:var(--ds-font-family-code)}
+._dy_body{min-height:0;flex:1;display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:12px 12px 24px;overflow-y:auto}
+._dy_toolbar{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;flex:none}
+._dy_phone{position:relative;flex:none;width:100%;background:#0a0a0c;border:1px solid #26262c;border-radius:32px;padding:12px;box-sizing:border-box;box-shadow:0 16px 36px rgba(0,0,0,.28)}
+._dy_notch{width:34%;height:16px;border-radius:9px;background:#000;margin:0 auto 9px}
+._dy_screen{position:relative;width:100%;aspect-ratio:9/19;border-radius:22px;overflow:hidden;background:#000}
+._dy_homeBar{width:32%;height:5px;border-radius:3px;background:#2a2a30;margin:10px auto 0}
+._dy_status{padding:0 6px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:19px;text-align:center}
+._dy_status a{color:var(--dsw-alias-brand-primary);text-decoration:none}
+._dy_status a:hover{text-decoration:underline}
+._dy_btn{height:30px;padding:0 12px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+._dy_btn:hover{background:var(--dsw-alias-interactive-bg-hover)}
+._rs_setGroup{flex-direction:column;gap:8px;padding:16px 0;border-bottom:1px solid var(--dsw-alias-border-l2);display:flex}
+._rs_setTitle{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:400;line-height:22px}
+._rs_setDesc{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}
+._rs_setChips{flex-wrap:wrap;align-items:center;gap:6px;display:flex}
+._rs_setChip{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);font:inherit;color:var(--dsw-alias-label-primary);cursor:pointer;background:0 0;border-radius:999px;padding:5px 14px;font-size:13px;line-height:20px}
+._rs_setChip:hover{background:var(--dsw-alias-interactive-bg-hover)}
+._rs_setChip[aria-pressed=true]{background:var(--dsw-alias-bg-module-platform);border-color:var(--dsw-static-neutral-bluish-400)}
 `;
     const styleId = "dsh-right-sidebar/styles";
     if (typeof document !== "undefined" && !document.querySelector(`style[data-plugin-css="${styleId}"]`)) {
@@ -145,6 +175,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       if (kind === "reload") return h("svg", common, h("path", { d: "M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" }));
       if (kind === "external") return h("svg", common, h("path", { d: "M14 5h5v5M19 5l-8 8M18 13v6H5V6h6" }));
       if (kind === "music") return h("svg", common, h("path", { d: "M9 18V6l12-2v12" }), h("circle", { cx: 6, cy: 18, r: 3 }), h("circle", { cx: 18, cy: 16, r: 3 }));
+      if (kind === "douyin") return h("svg", common, h("path", { d: "M9.5 18.5V6.2l9.5-1.7v11.2" }), h("circle", { cx: 7, cy: 18.5, r: 2.6 }), h("circle", { cx: 16.5, cy: 15.7, r: 2.6 }), h("path", { d: "M19 8.3c-1.8 0-3.4-.9-4.3-2.3" }));
       if (kind === "play") return h("svg", common, h("path", { d: "M7 5l12 7-12 7z" }));
       if (kind === "pause") return h("svg", common, h("path", { d: "M7 5h4v14H7zM13 5h4v14h-4z" }));
       if (kind === "prev") return h("svg", common, h("path", { d: "M6 5v14M19 5l-10 7 10 7z" }));
@@ -154,6 +185,11 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       if (kind === "repeat") return h("svg", common, h("path", { d: "M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" }));
       if (kind === "shuffle") return h("svg", common, h("path", { d: "M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5" }));
       if (kind === "repeat-one") return h("svg", common, h("path", { d: "M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3M11 10h1.5v4" }));
+      if (kind === "book") return h("svg", common, h("path", { d: "M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5z" }));
+      if (kind === "list") return h("svg", common, h("path", { d: "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" }));
+      if (kind === "zoom-in") return h("svg", common, h("circle", { cx: 11, cy: 11, r: 7 }), h("path", { d: "m21 21-4.35-4.35M11 8v6M8 11h6" }));
+      if (kind === "zoom-out") return h("svg", common, h("circle", { cx: 11, cy: 11, r: 7 }), h("path", { d: "m21 21-4.35-4.35M8 11h6" }));
+      if (kind === "eye") return h("svg", common, h("path", { d: "M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" }), h("circle", { cx: 12, cy: 12, r: 3 }));
       return h("svg", common, h("path", { d: "M5 4h14v16H5zM9 8h6M9 12h6M9 16h4" }));
     }
 
@@ -161,6 +197,100 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       try { const value = window.localStorage.getItem(key); return value === null ? fallback : value; } catch { return fallback; }
     };
     const writePreference = (key, value) => { try { window.localStorage.setItem(key, value); } catch {} };
+
+    // Tabs the sidebar can show, in display order. `id` is the stable key;
+    // `zh`/`en` are used by the Settings row (localized through the locale
+    // service) and by the tab bar fallback labels.
+    const SIDEBAR_TABS = [
+      { id: "search", zh: "搜索", en: "Search" },
+      { id: "files", zh: "文件", en: "Files" },
+      { id: "overview", zh: "概览", en: "Overview" },
+      { id: "browser", zh: "浏览器", en: "Browser" },
+      { id: "terminal", zh: "终端", en: "Terminal" },
+      { id: "media", zh: "媒体", en: "Media" },
+      { id: "ebook", zh: "电子书", en: "E-book" },
+      { id: "douyin", zh: "抖音", en: "TikTok" }
+    ];
+    const DEFAULT_VISIBLE_TABS = () => Object.fromEntries(SIDEBAR_TABS.map((entry) => [entry.id, true]));
+    const TABS_PREFERENCE_KEY = "dsh-right-sidebar:tabs";
+
+    // Reactive visibility store shared by the sidebar tab bar and the Settings
+    // row. Out-of-tree plugins resolve without `@deepseek-ai/dsh-settings`, so
+    // persistence uses localStorage (same pattern as the theme-from-image
+    // plugin), while the row itself mounts through the official
+    // `settings.general.item` slot.
+    function createTabsStore() {
+      let visible = (() => {
+        const base = DEFAULT_VISIBLE_TABS();
+        try {
+          const saved = JSON.parse(readPreference(TABS_PREFERENCE_KEY, ""));
+          if (saved && typeof saved === "object") {
+            for (const entry of SIDEBAR_TABS) {
+              if (typeof saved[entry.id] === "boolean") base[entry.id] = saved[entry.id];
+            }
+          }
+        } catch {}
+        return base;
+      })();
+      const listeners = new Set();
+      return {
+        getSnapshot: () => visible,
+        subscribe: (listener) => {
+          listeners.add(listener);
+          return () => listeners.delete(listener);
+        },
+        setVisible: (id, value) => {
+          const next = { ...visible, [id]: Boolean(value) };
+          visible = next;
+          writePreference(TABS_PREFERENCE_KEY, JSON.stringify(next));
+          for (const listener of listeners) listener();
+        }
+      };
+    }
+    const SETTINGS_NS = "settings.rightSidebar";
+    const settingsZh = {
+      "sidebar.tabs.title": "辅助栏标签页",
+      "sidebar.tabs.description": "选择要显示在右侧辅助栏的标签页。",
+      "sidebar.tab.search": "搜索",
+      "sidebar.tab.files": "文件",
+      "sidebar.tab.overview": "概览",
+      "sidebar.tab.browser": "浏览器",
+      "sidebar.tab.terminal": "终端",
+      "sidebar.tab.media": "媒体",
+      "sidebar.tab.ebook": "电子书",
+      "sidebar.tab.douyin": "抖音"
+    };
+    const settingsEn = {
+      "sidebar.tabs.title": "Sidebar tabs",
+      "sidebar.tabs.description": "Choose which tabs appear in the right sidebar.",
+      "sidebar.tab.search": "Search",
+      "sidebar.tab.files": "Files",
+      "sidebar.tab.overview": "Overview",
+      "sidebar.tab.browser": "Browser",
+      "sidebar.tab.terminal": "Terminal",
+      "sidebar.tab.media": "Media",
+      "sidebar.tab.ebook": "E-book",
+      "sidebar.tab.douyin": "TikTok"
+    };
+
+    // Settings → General row: toggle chips for each sidebar tab.
+    function SidebarTabsRow({ t, useTabs, setTabVisible }) {
+      const visible = useTabs((state) => state);
+      return h("div", { className: "_rs_setGroup" },
+        h("div", { className: "_rs_setTitle" }, t("sidebar.tabs.title")),
+        h("div", { className: "_rs_setDesc" }, t("sidebar.tabs.description")),
+        h("div", { className: "_rs_setChips" },
+          SIDEBAR_TABS.map((entry) => h("button", {
+            key: entry.id,
+            type: "button",
+            className: "_rs_setChip",
+            "aria-pressed": visible[entry.id] ? "true" : "false",
+            onClick: () => setTabVisible(entry.id, !visible[entry.id])
+          }, t(`sidebar.tab.${entry.id}`)))
+        )
+      );
+    }
+
     const titleFor = (summary) => summary?.projections?.values?.title || (summary?.blank ? "新会话" : "未命名会话");
     const basename = (path) => path.split("/").filter(Boolean).pop() || path;
     const terminalRequest = async (body) => {
@@ -237,6 +367,28 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
     };
     const spotifyPageUrl = (parsed) => `https://open.spotify.com/${parsed.type}/${parsed.id}`;
 
+    const ebookRequest = async (endpoint, body) => {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-dsh-right-sidebar": "1" },
+        body: JSON.stringify(body)
+      });
+      const value = await response.json();
+      if (!response.ok || !value.ok) throw new Error(value.error || "电子书服务不可用");
+      return value;
+    };
+    const ebookExt = (path) => (/\.pdf$/i.test(String(path || "")) ? "pdf" : /\.epub$/i.test(String(path || "")) ? "epub" : "");
+    const ebookName = (path) => {
+      const base = basename(path).replace(/\.(epub|pdf)$/i, "");
+      return base.trim() || base;
+    };
+    const ebookPdfUrl = (path) => `/dsh-right-sidebar/ebook/pdf?path=${encodeURIComponent(path)}`;
+    const wrapChapter = (html, eyeMode) => {
+      const background = eyeMode ? "#f6efdf" : "#ffffff";
+      const color = eyeMode ? "#4a4032" : "#1c1c1e";
+      return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:${background}!important}body{padding:26px 32px;font-family:-apple-system,'PingFang SC','Hiragino Sans GB',sans-serif;line-height:1.9;color:${color}!important;word-break:break-word;max-width:720px;margin:0 auto;box-sizing:border-box}img{max-width:100%;height:auto}h1,h2,h3,h4,h5{line-height:1.4;color:inherit}p{margin:0 0 1em}</style></head><body>${html}</body></html>`;
+    };
+
     function collectVisibleFiles(cwd) {
       const values = new Set();
       const candidates = [];
@@ -286,8 +438,15 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       return Math.max(DETAILS_MIN_WIDTH, Math.min(width, getMaxPanelWidth()));
     };
 
-    function RightSidebar({ useSessions, sessions, workspaces, layout, connection }) {
+    function RightSidebar({ useSessions, useLocale, useTabs, sessions, workspaces, layout, connection }) {
       const snapshot = useSessions((state) => state);
+      const localeSnapshot = useLocale((state) => state);
+      const localeActive = localeSnapshot?.active || "zh";
+      const tabsVisible = useTabs((state) => state);
+      const visibleTabIds = React.useMemo(
+        () => SIDEBAR_TABS.filter((entry) => tabsVisible[entry.id] !== false).map((entry) => entry.id),
+        [tabsVisible]
+      );
       const current = snapshot.current;
       const [catalog, setCatalog] = React.useState({});
       const summary = current ? (catalog[current] || snapshot.byId[current]) : undefined;
@@ -347,6 +506,29 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       const [mediaDuration, setMediaDuration] = React.useState(0);
       const [playMode, setPlayMode] = React.useState(() => readPreference("dsh-right-sidebar:play-mode", "order"));
       const [spotifyLink, setSpotifyLink] = React.useState(() => readPreference("dsh-right-sidebar:spotify", ""));
+      const [ebookLibrary, setEbookLibrary] = React.useState(() => {
+        try {
+          const parsed = JSON.parse(readPreference("dsh-right-sidebar:ebooks", "[]"));
+          return Array.isArray(parsed) ? parsed : [];
+        } catch { return []; }
+      });
+      const [ebookOpen, setEbookOpen] = React.useState(() => readPreference("dsh-right-sidebar:ebook-open", ""));
+      const [ebookMeta, setEbookMeta] = React.useState(null);
+      const [ebookChapterIndex, setEbookChapterIndex] = React.useState(0);
+      const [ebookHtml, setEbookHtml] = React.useState("");
+      const [ebookLoading, setEbookLoading] = React.useState(false);
+      const [ebookError, setEbookError] = React.useState("");
+      const [ebookShowChapters, setEbookShowChapters] = React.useState(false);
+      const [ebookFontScale, setEbookFontScale] = React.useState(() => {
+        const saved = Number(readPreference("dsh-right-sidebar:ebook-scale", "1"));
+        return Number.isFinite(saved) && saved > 0 ? saved : 1;
+      });
+      const [ebookInput, setEbookInput] = React.useState("");
+      const [ebookEyeMode, setEbookEyeMode] = React.useState(() => readPreference("dsh-right-sidebar:ebook-eye", "0") === "1");
+      const douyinSite = localeActive === "en" ? "https://www.tiktok.com/" : "https://www.douyin.com/";
+      const douyinFrameRef = React.useRef(null);
+      const nativeOwnerRef = React.useRef("");
+      const [modalOpen, setModalOpen] = React.useState(false);
       const audioRef = React.useRef(null);
       const videoRef = React.useRef(null);
       const vizCanvasRef = React.useRef(null);
@@ -802,6 +984,16 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 
       const chooseTab = (next) => { setTab(next); writePreference("dsh-right-sidebar:tab", next); if (next === "files") setFilesTick((n) => n + 1); };
 
+      // If the active tab is hidden (e.g. toggled off in Settings), fall back
+      // to the first still-visible tab so the panel never shows a ghost body.
+      React.useEffect(() => {
+        if (!visibleTabIds.includes(tab)) {
+          const fallback = visibleTabIds[0] || "search";
+          setTab(fallback);
+          writePreference("dsh-right-sidebar:tab", fallback);
+        }
+      }, [visibleTabIds, tab]);
+
       const navigate = React.useCallback((raw) => {
         const next = normalizeUrl(raw);
         if (!next) return;
@@ -910,7 +1102,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
             loading: Boolean(detail.loading),
             error: detail.error || ""
           });
-          if (detail.url && (!browserEditingRef.current || !detail.loading)) {
+          if (detail.url && nativeOwnerRef.current === "browser" && (!browserEditingRef.current || !detail.loading)) {
             setBrowserInput(detail.url);
             writePreference("dsh-right-sidebar:url", detail.url);
           }
@@ -919,24 +1111,47 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         return () => window.removeEventListener("dsh-native-browser-state", onState);
       }, []);
 
+      React.useEffect(() => {
+        if (typeof document === "undefined") return;
+        const refresh = () => setModalOpen(Boolean(document.querySelector('[aria-modal="true"]')));
+        refresh();
+        const observer = new MutationObserver(refresh);
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-modal"] });
+        return () => observer.disconnect();
+      }, []);
+
       React.useLayoutEffect(() => {
         if (!nativeBrowserBridge) return;
-        if (!open || tab !== "browser" || !browserUrl || !browserFrameRef.current) {
+        const douyinActive = open && tab === "douyin" && douyinFrameRef.current;
+        const browserActive = open && tab === "browser" && browserUrl && browserFrameRef.current;
+        const node = douyinActive ? douyinFrameRef.current : browserActive ? browserFrameRef.current : null;
+        const activeUrl = douyinActive ? douyinSite : browserActive ? browserUrl : "";
+        if (!node || !activeUrl || modalOpen) {
           postNativeBrowser({ action: "hide" });
           return;
         }
         let frame = 0;
         let lastFrame = "";
-        const node = browserFrameRef.current;
+        const radius = douyinActive ? 22 : 0;
         const sync = () => {
           const rect = node.getBoundingClientRect();
           const nextFrame = [rect.x, rect.y, rect.width, rect.height].map((value) => Math.round(value * 2) / 2).join(":");
           if (nextFrame === lastFrame) return;
           lastFrame = nextFrame;
-          postNativeBrowser({ action: "frame", x: rect.x, y: rect.y, width: rect.width, height: rect.height });
+          postNativeBrowser({ action: "frame", x: rect.x, y: rect.y, width: rect.width, height: rect.height, radius });
         };
         const rect = node.getBoundingClientRect();
-        postNativeBrowser({ action: "show", url: browserUrl, x: rect.x, y: rect.y, width: rect.width, height: rect.height });
+        postNativeBrowser({ action: "show", url: activeUrl, x: rect.x, y: rect.y, width: rect.width, height: rect.height, radius });
+        const owner = douyinActive ? `douyin:${douyinSite}` : "browser";
+        if (nativeOwnerRef.current !== owner) {
+          const previous = nativeOwnerRef.current;
+          nativeOwnerRef.current = owner;
+          // On first mount the `show` action already loads the URL when the
+          // embedded browser is empty; only force a reload on a real switch.
+          // The douyin owner key includes the site so switching language
+          // (Douyin <-> TikTok) also reloads the frame.
+          if (previous !== "") postNativeBrowser({ action: "navigate", url: activeUrl });
+        }
         const followGeometry = () => {
           sync();
           frame = requestAnimationFrame(followGeometry);
@@ -951,7 +1166,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
           window.removeEventListener("resize", sync);
           postNativeBrowser({ action: "hide" });
         };
-      }, [open, tab, browserUrl]);
+      }, [open, tab, browserUrl, douyinSite, modalOpen]);
 
       const runCommand = async () => {
         const command = terminalInput;
@@ -1066,6 +1281,204 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         h("div", { className: "_mp_status" }, spotifyLink.trim() && !spotifyConfig ? "无法识别这个链接，请粘贴 Spotify 的单曲、专辑、歌单或播客分享链接。" : "粘贴链接点「打开」，在右栏浏览器中用 Spotify 网页版播放。首次使用请点「打开首页」登录账号，之后即可完整播放。")
       );
 
+      const pickEbook = React.useCallback(() => {
+        const bridge = window.webkit?.messageHandlers?.dshEbookPicker;
+        if (!bridge) {
+          setEbookError("文件选择器需要重启 App 后可用；你也可以在下方输入文件或文件夹路径导入。");
+          return;
+        }
+        try { bridge.postMessage({ action: "pick" }); }
+        catch { setEbookError("无法打开文件选择器。"); }
+      }, []);
+
+      const addEbooks = React.useCallback((paths) => {
+        const files = [];
+        const dirs = [];
+        for (const raw of paths) {
+          const path = String(raw || "").trim();
+          if (!path) continue;
+          if (ebookExt(path)) files.push(path);
+          else dirs.push(path);
+        }
+        const merge = (list) => setEbookLibrary((items) => {
+          const seen = new Set(items.map((item) => item.path));
+          return [...items, ...list.filter((path) => !seen.has(path)).map((path) => ({ path, name: ebookName(path), ext: ebookExt(path) }))];
+        });
+        if (files.length) merge(files);
+        for (const dir of dirs) {
+          ebookRequest("/dsh-right-sidebar/ebook/scan", { dir })
+            .then((value) => merge(value.files || []))
+            .catch((error) => setEbookError(error.message || String(error)));
+        }
+      }, []);
+
+      const submitEbookPath = React.useCallback(() => {
+        const value = ebookInput.trim();
+        if (!value) return;
+        setEbookInput("");
+        addEbooks([value]);
+      }, [ebookInput, addEbooks]);
+
+      React.useEffect(() => {
+        const onPicked = (event) => {
+          const paths = event.detail?.paths;
+          if (Array.isArray(paths) && paths.length) addEbooks(paths);
+        };
+        window.addEventListener("dsh-ebook-picked", onPicked);
+        return () => window.removeEventListener("dsh-ebook-picked", onPicked);
+      }, [addEbooks]);
+
+      const loadChapter = React.useCallback(async (path, href) => {
+        try {
+          const value = await ebookRequest("/dsh-right-sidebar/ebook/chapter", { path, href });
+          setEbookHtml(value.html || "");
+        } catch (error) {
+          setEbookError(error.message || String(error));
+        }
+      }, []);
+
+      const openEbook = React.useCallback(async (path) => {
+        const ext = ebookExt(path);
+        if (!ext) return;
+        setEbookOpen(path);
+        setEbookError("");
+        setEbookShowChapters(false);
+        if (ext === "pdf") {
+          setEbookMeta(null);
+          setEbookHtml("");
+          return;
+        }
+        setEbookLoading(true);
+        try {
+          const value = await ebookRequest("/dsh-right-sidebar/ebook/meta", { path });
+          const chapters = Array.isArray(value.chapters) ? value.chapters : [];
+          setEbookMeta({ title: value.title || ebookName(path), author: value.author || "", chapters });
+          const saved = Number(readPreference(`dsh-right-sidebar:ebook-chapter:${path}`, "0"));
+          const index = chapters.length ? Math.min(Math.max(0, saved), chapters.length - 1) : 0;
+          setEbookChapterIndex(index);
+          if (chapters.length) await loadChapter(path, chapters[index].href);
+          else setEbookHtml("");
+        } catch (error) {
+          setEbookError(error.message || String(error));
+          setEbookMeta(null);
+        } finally {
+          setEbookLoading(false);
+        }
+      }, [loadChapter]);
+
+      const gotoChapter = React.useCallback((index) => {
+        if (!ebookMeta || !ebookMeta.chapters.length || !ebookOpen) return;
+        const next = Math.min(Math.max(0, index), ebookMeta.chapters.length - 1);
+        setEbookChapterIndex(next);
+        writePreference(`dsh-right-sidebar:ebook-chapter:${ebookOpen}`, String(next));
+        loadChapter(ebookOpen, ebookMeta.chapters[next].href);
+      }, [ebookMeta, ebookOpen, loadChapter]);
+
+      const closeEbook = React.useCallback(() => {
+        setEbookOpen("");
+        setEbookMeta(null);
+        setEbookHtml("");
+        setEbookError("");
+        setEbookShowChapters(false);
+      }, []);
+
+      const removeEbook = React.useCallback((path) => {
+        setEbookLibrary((items) => items.filter((item) => item.path !== path));
+        if (ebookOpen === path) closeEbook();
+      }, [ebookOpen, closeEbook]);
+
+      const changeFontScale = React.useCallback((delta) => {
+        setEbookFontScale((scale) => {
+          const next = Math.min(1.8, Math.max(0.7, Math.round((scale + delta) * 100) / 100));
+          writePreference("dsh-right-sidebar:ebook-scale", String(next));
+          return next;
+        });
+      }, []);
+
+      React.useEffect(() => {
+        writePreference("dsh-right-sidebar:ebooks", JSON.stringify(ebookLibrary));
+      }, [ebookLibrary]);
+
+      React.useEffect(() => {
+        writePreference("dsh-right-sidebar:ebook-open", ebookOpen);
+      }, [ebookOpen]);
+
+      React.useEffect(() => {
+        writePreference("dsh-right-sidebar:ebook-eye", ebookEyeMode ? "1" : "0");
+      }, [ebookEyeMode]);
+
+      const isEbookPdf = ebookExt(ebookOpen) === "pdf";
+      const shelfBody = h("div", { className: "_eb_shelf" },
+        h("button", { className: "_mp_pick", onClick: pickEbook }, icon("book", 15), "导入电子书（EPUB / PDF）"),
+        h("div", { className: "_mp_dirRow" },
+          h("input", { className: "_mp_input", value: ebookInput, placeholder: "或输入文件 / 文件夹路径，回车导入", spellCheck: false, onChange: (event) => setEbookInput(event.target.value), onKeyDown: (event) => { if (event.key === "Enter") submitEbookPath(); } }),
+          h("button", { className: "_mp_btn", onClick: submitEbookPath }, "添加")
+        ),
+        ebookError ? h("div", { className: "_mp_status" }, ebookError) : null,
+        h("div", { className: "_mp_plHead" }, h("span", { className: "_mp_plLabel" }, `书架 · ${ebookLibrary.length}`)),
+        ebookLibrary.length === 0 ? h("div", { className: "_mp_status" }, "还没有电子书。点击上方按钮选择 EPUB / PDF 文件，或选择一个文件夹批量导入。") : null,
+        h("div", { className: "_mp_list" }, ebookLibrary.map((item) => h("div", {
+          key: item.path, className: "_mp_file", role: "button", tabIndex: 0,
+          onClick: () => openEbook(item.path),
+          onKeyDown: (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openEbook(item.path); } }
+        },
+          h("span", { className: "_mp_fileMeta" }, item.ext === "pdf" ? "PDF" : "EPUB"),
+          h("div", { className: "_mp_fileText" },
+            h("div", { className: "_mp_fileName", title: item.name }, item.name),
+            h("div", { className: "_mp_fileSub _rs_path" }, item.path)
+          ),
+          h("button", { className: "_mp_fileRemove", "aria-label": `移除 ${item.name}`, title: "移除", onClick: (event) => { event.stopPropagation(); removeEbook(item.path); } }, icon("close", 13))
+        )))
+      );
+
+      const readerBody = h("div", { className: "_eb_reader" },
+        h("div", { className: "_eb_toolbar" },
+          h("button", { className: "_rs_navBtn", title: "返回书架", onClick: closeEbook }, icon("back", 15)),
+          h("div", { className: "_eb_title" }, ebookMeta?.title || ebookName(ebookOpen)),
+          isEbookPdf ? null : h("button", { className: "_rs_navBtn", title: "章节目录", onClick: () => setEbookShowChapters((value) => !value) }, icon("list", 15)),
+          isEbookPdf ? null : h("button", { className: "_rs_navBtn", "data-active": ebookEyeMode || undefined, title: ebookEyeMode ? "关闭护眼模式" : "护眼模式", onClick: () => setEbookEyeMode((value) => !value) }, icon("eye", 15)),
+          isEbookPdf ? null : h("button", { className: "_rs_navBtn", title: "缩小", onClick: () => changeFontScale(-0.15) }, icon("zoom-out", 15)),
+          isEbookPdf ? null : h("span", { className: "_eb_scale" }, `${Math.round(ebookFontScale * 100)}%`),
+          isEbookPdf ? null : h("button", { className: "_rs_navBtn", title: "放大", onClick: () => changeFontScale(0.15) }, icon("zoom-in", 15)),
+          isEbookPdf ? null : h("button", { className: "_rs_navBtn", title: "上一章", disabled: !ebookMeta || ebookChapterIndex <= 0, onClick: () => gotoChapter(ebookChapterIndex - 1) }, icon("up", 15)),
+          isEbookPdf ? null : h("button", { className: "_rs_navBtn", title: "下一章", disabled: !ebookMeta || ebookChapterIndex >= ebookMeta.chapters.length - 1, onClick: () => gotoChapter(ebookChapterIndex + 1) }, icon("down", 15))
+        ),
+        isEbookPdf ? null : ebookShowChapters ? h("div", { className: "_eb_chapters" }, (ebookMeta?.chapters || []).map((chapter, index) => h("button", {
+          key: chapter.href, className: "_eb_chapter", "data-active": index === ebookChapterIndex || undefined,
+          onClick: () => { gotoChapter(index); setEbookShowChapters(false); }
+        }, `${index + 1}. ${chapter.label}`))) : null,
+        h("div", { className: "_eb_content", style: { background: ebookEyeMode ? "#f6efdf" : "#fff" } },
+          isEbookPdf
+            ? h("iframe", { className: "_eb_frame", src: ebookPdfUrl(ebookOpen), title: "PDF 阅读器" })
+            : ebookLoading ? h("div", { className: "_rs_status" }, "正在加载…")
+            : ebookError ? h("div", { className: "_rs_status" }, ebookError)
+            : h("iframe", { key: `${ebookOpen}:${ebookChapterIndex}`, className: "_eb_frame", srcDoc: ebookHtml ? wrapChapter(ebookHtml, ebookEyeMode) : "", style: { zoom: ebookFontScale }, title: "章节内容" })
+        )
+      );
+
+      const ebookBody = ebookOpen ? readerBody : shelfBody;
+
+      const openDouyinInBrowser = () => {
+        chooseTab("browser");
+        navigate(douyinSite);
+      };
+      const douyinBody = h("div", { className: "_dy_body" },
+        h("div", { className: "_dy_toolbar" },
+          h("button", { className: "_dy_btn", title: localeActive === "en" ? "Reload TikTok" : "刷新抖音", onClick: () => postNativeBrowser({ action: "reload" }) }, icon("reload", 14), localeActive === "en" ? "Reload" : "刷新"),
+          h("button", { className: "_dy_btn", title: localeActive === "en" ? "Open TikTok in the sidebar browser" : "在右栏浏览器打开抖音网页版", onClick: openDouyinInBrowser }, icon("external", 14), localeActive === "en" ? "Open in browser" : "浏览器打开")
+        ),
+        h("div", { className: "_dy_phone" },
+          h("div", { className: "_dy_notch" }),
+          h("div", { ref: douyinFrameRef, className: "_dy_screen" }),
+          h("div", { className: "_dy_homeBar" })
+        ),
+        h("div", { className: "_dy_status" },
+          localeActive === "en"
+            ? "The phone frame shows the TikTok web player (sign in on first use). Auto-play depends on TikTok's own web limits; if you want full screen or have trouble signing in, tap \"Open in browser\" above to visit it in the sidebar browser."
+            : "手机界面内是抖音网页版（首次需登录账号）。视频能否自动播放取决于抖音网页自身的限制；若想全屏或登录不顺，点上方「浏览器打开」在右栏浏览器中访问。"
+        )
+      );
+
       const mediaBody = h("div", { className: "_mp_body" },
         h("button", { className: "_mp_pick", onClick: pickMedia }, icon("music", 15), "选择音频或视频文件"),
         h("div", { className: "_mp_dirRow" },
@@ -1105,10 +1518,10 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         h("div", { className: "_rs_resize", role: "separator", "aria-label": "调整右边栏宽度", "aria-orientation": "vertical", "data-dragging": resizing || undefined, title: "左右拖动调整宽度", onPointerDown: beginResize }),
         h("div", { className: "_rs_header" }, h("div", { className: "_rs_title" }, "辅助栏"), h("button", { className: "_rs_iconBtn", "aria-label": "关闭多功能右边栏", title: "关闭右边栏 · ⇧⌘F", onClick: toggle }, icon("close", 16))),
         h("div", { className: "_rs_tabs", role: "tablist" },
-          [["search", "搜索"], ["files", "文件"], ["overview", "概览"], ["browser", "浏览器"], ["terminal", "终端"], ["media", "媒体"]].map(([id, label]) => h("button", { key: id, role: "tab", className: "_rs_tab", "data-active": tab === id || undefined, "aria-selected": tab === id, onClick: () => chooseTab(id) }, label))
+          SIDEBAR_TABS.filter((entry) => visibleTabIds.includes(entry.id)).map((entry) => h("button", { key: entry.id, role: "tab", className: "_rs_tab", "data-active": tab === entry.id || undefined, "aria-selected": tab === entry.id, onClick: () => chooseTab(entry.id) }, localeActive === "en" ? entry.en : entry.zh))
         ),
-        h("div", { className: "_rs_body", "data-full": tab === "browser" || tab === "terminal" || undefined }, tab === "search" ? searchBody : tab === "files" ? filesBody : tab === "overview" ? overviewBody : tab === "browser" ? browserBody : tab === "terminal" ? terminalBody : mediaBody),
-        h("div", { className: "_np_footer", "data-hidden": mediaPath ? undefined : "" },
+        h("div", { className: "_rs_body", "data-full": tab === "browser" || tab === "terminal" || tab === "ebook" || tab === "douyin" || undefined }, tab === "search" ? searchBody : tab === "files" ? filesBody : tab === "overview" ? overviewBody : tab === "browser" ? browserBody : tab === "terminal" ? terminalBody : tab === "ebook" ? ebookBody : tab === "douyin" ? douyinBody : mediaBody),
+        h("div", { className: "_np_footer", "data-hidden": mediaPath && tab !== "ebook" ? undefined : "" },
           h("canvas", { ref: vizCanvasRef, className: "_np_viz", width: 800, height: 64 }),
           h("audio", { ref: audioRef, style: { display: "none" }, src: !isMediaVideo && mediaPath ? mediaStreamUrl(mediaPath) : undefined, onPlay: () => setMediaPlaying(true), onPause: () => setMediaPlaying(false), onTimeUpdate: (event) => setMediaTime(event.currentTarget.currentTime), onLoadedMetadata: (event) => setMediaDuration(event.currentTarget.duration), onEnded: handleMediaEnded }),
           h("div", { className: "_np_row" },
@@ -1129,14 +1542,25 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       );
     }
 
-    const inject = ["slots", "layout", "sessions", "workspaces", "connection"];
+    const inject = ["slots", "layout", "sessions", "workspaces", "connection", "locale"];
     function apply(ctx) {
       const useSessions = bindSnapshotSelector(ctx.sessions.list);
+      const useLocale = bindSnapshotSelector(ctx.locale);
+      const tabsStore = createTabsStore();
+      const useTabs = bindSnapshotSelector(tabsStore);
+      ctx.effect(() => ctx.locale.register(SETTINGS_NS, { zh: settingsZh, en: settingsEn }), "right-sidebar: settings row dictionaries");
+      ctx.slots.inject("settings.general.item", () => ctx.slots.register({
+        name: "settings.general.item",
+        id: "right-sidebar-tabs",
+        order: 30,
+        locale: SETTINGS_NS,
+        inject: () => ({ useTabs, setTabVisible: tabsStore.setVisible })
+      }, SidebarTabsRow));
       ctx.slots.inject("shell.overlay", () => ctx.slots.register({
         name: "shell.overlay",
         id: "right-sidebar",
         order: 100,
-        inject: () => ({ useSessions, sessions: ctx.sessions, workspaces: ctx.workspaces, layout: ctx.layout, connection: ctx.connection })
+        inject: () => ({ useSessions, useLocale, useTabs, sessions: ctx.sessions, workspaces: ctx.workspaces, layout: ctx.layout, connection: ctx.connection })
       }, RightSidebar));
     }
 
