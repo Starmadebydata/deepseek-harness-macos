@@ -138,17 +138,6 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 ._eb_content{min-height:0;flex:1;overflow:hidden;background:#fff}
 ._eb_frame{width:100%;height:100%;border:0;display:block}
 ._eb_scale{flex:none;min-width:44px;text-align:center;color:var(--dsw-alias-label-secondary);font-size:11px;font-family:var(--ds-font-family-code)}
-._dy_body{min-height:0;flex:1;display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:12px 12px 24px;overflow-y:auto}
-._dy_toolbar{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;flex:none}
-._dy_phone{position:relative;flex:none;width:100%;background:#0a0a0c;border:1px solid #26262c;border-radius:32px;padding:12px;box-sizing:border-box;box-shadow:0 16px 36px rgba(0,0,0,.28)}
-._dy_notch{width:34%;height:16px;border-radius:9px;background:#000;margin:0 auto 9px}
-._dy_screen{position:relative;width:100%;aspect-ratio:9/19;border-radius:22px;overflow:hidden;background:#000}
-._dy_homeBar{width:32%;height:5px;border-radius:3px;background:#2a2a30;margin:10px auto 0}
-._dy_status{padding:0 6px;color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:19px;text-align:center}
-._dy_status a{color:var(--dsw-alias-brand-primary);text-decoration:none}
-._dy_status a:hover{text-decoration:underline}
-._dy_btn{height:30px;padding:0 12px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:inherit;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
-._dy_btn:hover{background:var(--dsw-alias-interactive-bg-hover)}
 ._rs_setGroup{flex-direction:column;gap:8px;padding:16px 0;border-bottom:1px solid var(--dsw-alias-border-l2);display:flex}
 ._rs_setTitle{color:var(--dsw-alias-label-primary);font-size:14px;font-weight:400;line-height:22px}
 ._rs_setDesc{color:var(--dsw-alias-label-tertiary);font-size:12px;line-height:18px}
@@ -175,7 +164,6 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       if (kind === "reload") return h("svg", common, h("path", { d: "M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7" }));
       if (kind === "external") return h("svg", common, h("path", { d: "M14 5h5v5M19 5l-8 8M18 13v6H5V6h6" }));
       if (kind === "music") return h("svg", common, h("path", { d: "M9 18V6l12-2v12" }), h("circle", { cx: 6, cy: 18, r: 3 }), h("circle", { cx: 18, cy: 16, r: 3 }));
-      if (kind === "douyin") return h("svg", common, h("path", { d: "M9.5 18.5V6.2l9.5-1.7v11.2" }), h("circle", { cx: 7, cy: 18.5, r: 2.6 }), h("circle", { cx: 16.5, cy: 15.7, r: 2.6 }), h("path", { d: "M19 8.3c-1.8 0-3.4-.9-4.3-2.3" }));
       if (kind === "play") return h("svg", common, h("path", { d: "M7 5l12 7-12 7z" }));
       if (kind === "pause") return h("svg", common, h("path", { d: "M7 5h4v14H7zM13 5h4v14h-4z" }));
       if (kind === "prev") return h("svg", common, h("path", { d: "M6 5v14M19 5l-10 7 10 7z" }));
@@ -208,8 +196,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       { id: "browser", zh: "浏览器", en: "Browser" },
       { id: "terminal", zh: "终端", en: "Terminal" },
       { id: "media", zh: "媒体", en: "Media" },
-      { id: "ebook", zh: "电子书", en: "E-book" },
-      { id: "douyin", zh: "抖音", en: "TikTok" }
+      { id: "ebook", zh: "电子书", en: "E-book" }
     ];
     const DEFAULT_VISIBLE_TABS = () => Object.fromEntries(SIDEBAR_TABS.map((entry) => [entry.id, true]));
     const TABS_PREFERENCE_KEY = "dsh-right-sidebar:tabs";
@@ -257,8 +244,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       "sidebar.tab.browser": "浏览器",
       "sidebar.tab.terminal": "终端",
       "sidebar.tab.media": "媒体",
-      "sidebar.tab.ebook": "电子书",
-      "sidebar.tab.douyin": "抖音"
+      "sidebar.tab.ebook": "电子书"
     };
     const settingsEn = {
       "sidebar.tabs.title": "Sidebar tabs",
@@ -269,8 +255,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       "sidebar.tab.browser": "Browser",
       "sidebar.tab.terminal": "Terminal",
       "sidebar.tab.media": "Media",
-      "sidebar.tab.ebook": "E-book",
-      "sidebar.tab.douyin": "TikTok"
+      "sidebar.tab.ebook": "E-book"
     };
 
     // Settings → General row: toggle chips for each sidebar tab.
@@ -525,9 +510,6 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
       });
       const [ebookInput, setEbookInput] = React.useState("");
       const [ebookEyeMode, setEbookEyeMode] = React.useState(() => readPreference("dsh-right-sidebar:ebook-eye", "0") === "1");
-      const douyinSite = localeActive === "en" ? "https://www.tiktok.com/" : "https://www.douyin.com/";
-      const douyinFrameRef = React.useRef(null);
-      const nativeOwnerRef = React.useRef("");
       const [modalOpen, setModalOpen] = React.useState(false);
       const audioRef = React.useRef(null);
       const videoRef = React.useRef(null);
@@ -1102,7 +1084,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
             loading: Boolean(detail.loading),
             error: detail.error || ""
           });
-          if (detail.url && nativeOwnerRef.current === "browser" && (!browserEditingRef.current || !detail.loading)) {
+          if (detail.url && (!browserEditingRef.current || !detail.loading)) {
             setBrowserInput(detail.url);
             writePreference("dsh-right-sidebar:url", detail.url);
           }
@@ -1122,36 +1104,22 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 
       React.useLayoutEffect(() => {
         if (!nativeBrowserBridge) return;
-        const douyinActive = open && tab === "douyin" && douyinFrameRef.current;
-        const browserActive = open && tab === "browser" && browserUrl && browserFrameRef.current;
-        const node = douyinActive ? douyinFrameRef.current : browserActive ? browserFrameRef.current : null;
-        const activeUrl = douyinActive ? douyinSite : browserActive ? browserUrl : "";
-        if (!node || !activeUrl || modalOpen) {
+        if (!open || tab !== "browser" || !browserUrl || !browserFrameRef.current || modalOpen) {
           postNativeBrowser({ action: "hide" });
           return;
         }
         let frame = 0;
         let lastFrame = "";
-        const radius = douyinActive ? 22 : 0;
+        const node = browserFrameRef.current;
         const sync = () => {
           const rect = node.getBoundingClientRect();
           const nextFrame = [rect.x, rect.y, rect.width, rect.height].map((value) => Math.round(value * 2) / 2).join(":");
           if (nextFrame === lastFrame) return;
           lastFrame = nextFrame;
-          postNativeBrowser({ action: "frame", x: rect.x, y: rect.y, width: rect.width, height: rect.height, radius });
+          postNativeBrowser({ action: "frame", x: rect.x, y: rect.y, width: rect.width, height: rect.height });
         };
         const rect = node.getBoundingClientRect();
-        postNativeBrowser({ action: "show", url: activeUrl, x: rect.x, y: rect.y, width: rect.width, height: rect.height, radius });
-        const owner = douyinActive ? `douyin:${douyinSite}` : "browser";
-        if (nativeOwnerRef.current !== owner) {
-          const previous = nativeOwnerRef.current;
-          nativeOwnerRef.current = owner;
-          // On first mount the `show` action already loads the URL when the
-          // embedded browser is empty; only force a reload on a real switch.
-          // The douyin owner key includes the site so switching language
-          // (Douyin <-> TikTok) also reloads the frame.
-          if (previous !== "") postNativeBrowser({ action: "navigate", url: activeUrl });
-        }
+        postNativeBrowser({ action: "show", url: browserUrl, x: rect.x, y: rect.y, width: rect.width, height: rect.height });
         const followGeometry = () => {
           sync();
           frame = requestAnimationFrame(followGeometry);
@@ -1166,7 +1134,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
           window.removeEventListener("resize", sync);
           postNativeBrowser({ action: "hide" });
         };
-      }, [open, tab, browserUrl, douyinSite, modalOpen]);
+      }, [open, tab, browserUrl, modalOpen]);
 
       const runCommand = async () => {
         const command = terminalInput;
@@ -1458,27 +1426,6 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
 
       const ebookBody = ebookOpen ? readerBody : shelfBody;
 
-      const openDouyinInBrowser = () => {
-        chooseTab("browser");
-        navigate(douyinSite);
-      };
-      const douyinBody = h("div", { className: "_dy_body" },
-        h("div", { className: "_dy_toolbar" },
-          h("button", { className: "_dy_btn", title: localeActive === "en" ? "Reload TikTok" : "刷新抖音", onClick: () => postNativeBrowser({ action: "reload" }) }, icon("reload", 14), localeActive === "en" ? "Reload" : "刷新"),
-          h("button", { className: "_dy_btn", title: localeActive === "en" ? "Open TikTok in the sidebar browser" : "在右栏浏览器打开抖音网页版", onClick: openDouyinInBrowser }, icon("external", 14), localeActive === "en" ? "Open in browser" : "浏览器打开")
-        ),
-        h("div", { className: "_dy_phone" },
-          h("div", { className: "_dy_notch" }),
-          h("div", { ref: douyinFrameRef, className: "_dy_screen" }),
-          h("div", { className: "_dy_homeBar" })
-        ),
-        h("div", { className: "_dy_status" },
-          localeActive === "en"
-            ? "The phone frame shows the TikTok web player (sign in on first use). Auto-play depends on TikTok's own web limits; if you want full screen or have trouble signing in, tap \"Open in browser\" above to visit it in the sidebar browser."
-            : "手机界面内是抖音网页版（首次需登录账号）。视频能否自动播放取决于抖音网页自身的限制；若想全屏或登录不顺，点上方「浏览器打开」在右栏浏览器中访问。"
-        )
-      );
-
       const mediaBody = h("div", { className: "_mp_body" },
         h("button", { className: "_mp_pick", onClick: pickMedia }, icon("music", 15), "选择音频或视频文件"),
         h("div", { className: "_mp_dirRow" },
@@ -1520,7 +1467,7 @@ body[data-rs-wide] .pI_x6G_centerCol img,body[data-rs-wide] .pI_x6G_centerCol vi
         h("div", { className: "_rs_tabs", role: "tablist" },
           SIDEBAR_TABS.filter((entry) => visibleTabIds.includes(entry.id)).map((entry) => h("button", { key: entry.id, role: "tab", className: "_rs_tab", "data-active": tab === entry.id || undefined, "aria-selected": tab === entry.id, onClick: () => chooseTab(entry.id) }, localeActive === "en" ? entry.en : entry.zh))
         ),
-        h("div", { className: "_rs_body", "data-full": tab === "browser" || tab === "terminal" || tab === "ebook" || tab === "douyin" || undefined }, tab === "search" ? searchBody : tab === "files" ? filesBody : tab === "overview" ? overviewBody : tab === "browser" ? browserBody : tab === "terminal" ? terminalBody : tab === "ebook" ? ebookBody : tab === "douyin" ? douyinBody : mediaBody),
+        h("div", { className: "_rs_body", "data-full": tab === "browser" || tab === "terminal" || tab === "ebook" || undefined }, tab === "search" ? searchBody : tab === "files" ? filesBody : tab === "overview" ? overviewBody : tab === "browser" ? browserBody : tab === "terminal" ? terminalBody : tab === "ebook" ? ebookBody : mediaBody),
         h("div", { className: "_np_footer", "data-hidden": mediaPath && tab !== "ebook" ? undefined : "" },
           h("canvas", { ref: vizCanvasRef, className: "_np_viz", width: 800, height: 64 }),
           h("audio", { ref: audioRef, style: { display: "none" }, src: !isMediaVideo && mediaPath ? mediaStreamUrl(mediaPath) : undefined, onPlay: () => setMediaPlaying(true), onPause: () => setMediaPlaying(false), onTimeUpdate: (event) => setMediaTime(event.currentTarget.currentTime), onLoadedMetadata: (event) => setMediaDuration(event.currentTarget.duration), onEnded: handleMediaEnded }),

@@ -219,15 +219,6 @@ struct HarnessWebView: NSViewRepresentable {
                 width: max(1, min(width, mainWebView.bounds.width - x)),
                 height: max(1, min(height, mainWebView.bounds.height - max(0, frameY)))
             )
-            let radius = (body["radius"] as? Double) ?? 0
-            if radius > 0 {
-                browser.wantsLayer = true
-                browser.layer?.cornerRadius = radius
-                browser.layer?.masksToBounds = true
-            } else {
-                browser.layer?.cornerRadius = 0
-                browser.layer?.masksToBounds = false
-            }
         }
 
         private func sendBrowserState(error: String? = nil) {
