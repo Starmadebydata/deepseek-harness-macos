@@ -4,11 +4,16 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-16
+
 ### Added
 
 - Add a Spotify entry to the media tab: paste a share link to open the matching track, album, playlist, artist, or podcast in the right-sidebar browser, with a home-page button for signing in and full playback.
 - Add a right-sidebar e-book reader for local EPUB and PDF files, with folder import, a chapter list, font scaling, an eye-care reading mode, and progress memory.
 - Add a "Sidebar tabs" entry to Settings → General so users can choose which tabs appear in the right sidebar (choice persists across launches).
+
+### Fixed
+
 - Hide the native embedded browser while a modal dialog (such as Settings) is open, so it no longer covers the dialog.
 
 ## [0.3.0] - 2026-08-15
