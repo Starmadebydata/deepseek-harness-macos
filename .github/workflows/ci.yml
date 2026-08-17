@@ -15,11 +15,12 @@ jobs:
       - uses: actions/checkout@v5
       - name: Test
         run: swift test
-      - name: Validate bundled sidebar plugin
+      - name: Validate bundled plugins
         run: |
           node --check Plugins/dsh-right-sidebar/lib/index.js
           node --check Plugins/dsh-right-sidebar/lib/client.js
-          bash -n script/install_sidebar_plugin.sh
+          node --check Plugins/dsh-macos-tools/lib/index.js
+          bash -n script/install_plugins.sh
           bash -n script/build_and_run.sh
       - name: Build app bundle
         run: ./script/build_and_run.sh --build

@@ -1,0 +1,17 @@
+{
+  "name": "dsh-macos-tools",
+  "version": "0.1.0",
+  "description": "Native macOS tools for DeepSeek Harness agents: open files/folders/URLs, reveal in Finder, clipboard read/write, system notifications, text-to-speech, Apple Music control, screenshots, system volume, and app launch/quit/activate.",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js"
+  ],
+  "license": "MIT"
+}

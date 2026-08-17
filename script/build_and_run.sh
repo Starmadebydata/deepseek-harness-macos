@@ -19,7 +19,7 @@ INFO_PLIST="$APP_CONTENTS/Info.plist"
 ICON_FILE="$APP_RESOURCES/AppIcon.icns"
 
 if [[ "$MODE" == "--install-plugin" || "$MODE" == "install-plugin" ]]; then
-  "$ROOT_DIR/script/install_sidebar_plugin.sh"
+  "$ROOT_DIR/script/install_plugins.sh"
   exit 0
 fi
 
@@ -78,25 +78,25 @@ open_app() {
 
 case "$MODE" in
   run)
-    "$ROOT_DIR/script/install_sidebar_plugin.sh"
+    "$ROOT_DIR/script/install_plugins.sh"
     open_app
     ;;
   --debug|debug)
-    "$ROOT_DIR/script/install_sidebar_plugin.sh"
+    "$ROOT_DIR/script/install_plugins.sh"
     lldb -- "$APP_BINARY"
     ;;
   --logs|logs)
-    "$ROOT_DIR/script/install_sidebar_plugin.sh"
+    "$ROOT_DIR/script/install_plugins.sh"
     open_app
     /usr/bin/log stream --info --style compact --predicate "process == \"$PROCESS_NAME\""
     ;;
   --telemetry|telemetry)
-    "$ROOT_DIR/script/install_sidebar_plugin.sh"
+    "$ROOT_DIR/script/install_plugins.sh"
     open_app
     /usr/bin/log stream --info --style compact --predicate "subsystem == \"$BUNDLE_ID\""
     ;;
   --verify|verify)
-    "$ROOT_DIR/script/install_sidebar_plugin.sh"
+    "$ROOT_DIR/script/install_plugins.sh"
     open_app
     for _ in {1..20}; do
       if pgrep -x "$PROCESS_NAME" >/dev/null; then

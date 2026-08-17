@@ -29,6 +29,7 @@ It turns the local Harness server into a normal Mac app: double-click to launch,
 - Opens Spotify tracks, albums, playlists, and podcasts in the right-sidebar browser from a pasted share link
 - Reads local EPUB and PDF e-books in a right-sidebar reader with folder import
 - Lets users choose which tabs appear in the right sidebar from Settings → General
+- Gives the agent native macOS tools — opening files/folders/URLs, revealing in Finder, clipboard read/write, notifications, text-to-speech, Apple Music control, screenshots, volume, and app control — via the bundled `dsh-macos-tools` plugin
 - Supports the model providers available in the installed Harness version, including custom providers
 
 ## Requirements
@@ -65,7 +66,7 @@ Build without launching:
 ./script/build_and_run.sh --build
 ```
 
-Install or refresh only the sidebar plugin:
+Install or refresh only the bundled plugins:
 
 ```bash
 ./script/build_and_run.sh --install-plugin

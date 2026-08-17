@@ -27,6 +27,7 @@
 - 在媒体页粘贴 Spotify 分享链接，于右栏浏览器打开对应单曲、专辑、歌单或播客页面
 - 右栏内置电子书阅读器，可导入并阅读本地 EPUB 与 PDF 电子书
 - 可在「设置 → 通用」中选择右侧辅助栏要显示的标签页
+- 内置 `dsh-macos-tools` 插件，为 Agent 提供 macOS 原生工具：打开文件/文件夹/网址、Finder 显示、剪贴板读写、系统通知、语音朗读、Apple Music 控制、截图、系统音量、应用启停
 - 支持当前 Harness 版本提供的模型服务与自定义接口
 
 ## 环境要求
@@ -63,7 +64,7 @@ dist/DeepSeek Harness.app
 ./script/build_and_run.sh --build
 ```
 
-只安装或更新右栏插件：
+只安装或更新仓库内置插件（右栏、macOS 工具集）：
 
 ```bash
 ./script/build_and_run.sh --install-plugin
