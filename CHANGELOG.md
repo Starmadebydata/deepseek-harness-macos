@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-08-17
+
 ### Added
 
 - Add the `dsh-macos-tools` plugin: native macOS tools for the agent — opening files/folders/URLs, revealing in Finder, clipboard read/write, system notifications, text-to-speech, Apple Music control, screenshots, system volume, and app launch/quit/activate. The installer now supports multiple bundled plugins.
