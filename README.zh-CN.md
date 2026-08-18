@@ -1,6 +1,6 @@
 # DeepSeek Harness macOS 客户端
 
-当前版本：**0.5.0** · [版本更新日志](CHANGELOG.md)
+当前版本：**0.6.0** · [版本更新日志](CHANGELOG.md)
 
 这是官方 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI 的轻量原生 macOS 外壳。
 
@@ -28,6 +28,7 @@
 - 右栏内置电子书阅读器，可导入并阅读本地 EPUB 与 PDF 电子书
 - 可在「设置 → 通用」中选择右侧辅助栏要显示的标签页
 - 内置 `dsh-macos-tools` 插件，为 Agent 提供 macOS 原生工具：打开文件/文件夹/网址、Finder 显示、剪贴板读写、系统通知、语音朗读、Apple Music 控制、截图、系统音量、应用启停
+- 内置 `dsh-mahjong` 插件：四川麻将·血战到底，与三个 AI 机器人在全屏拟真麻将桌上对局（经典筒条图案、实时手牌分析、多局记分）
 - 支持当前 Harness 版本提供的模型服务与自定义接口
 
 ## 环境要求

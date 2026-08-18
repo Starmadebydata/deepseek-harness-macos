@@ -13,6 +13,7 @@ PROFILE_MODULES="$DSH_BASE_DIR/profiles/node_modules"
 PLUGINS=(
   "Plugins/dsh-right-sidebar|right-sidebar|sqlite"
   "Plugins/dsh-macos-tools|macos-tools|none"
+  "Plugins/dsh-mahjong|dsh-mahjong|none"
 )
 
 if [[ ! -f "$PROFILE_PACKAGE" || ! -f "$PROFILE_PATCH" ]]; then

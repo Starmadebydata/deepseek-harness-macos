@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-18
+
+### Added
+
+- Add the `dsh-mahjong` plugin: Sichuan Mahjong (血战到底) you can play against three AI opponents at a full-screen realistic mahjong table — wooden-rim felt table, 3D tiles with classic dot/bamboo patterns, standing tile walls for side players, per-seat discard zones, a center compass for wall/dealer state, turn glow indicators, drawn-tile separation, live hand analysis ("缺门未打完 / 未听牌 / 打出 X 可听 Y"), ting hints, multi-round scoring, and a confirm-to-quit button that returns to the conversation. The rule engine is validated by 11 unit tests, 300 bot-only simulated games with invariant checks, 150 human-path simulated games, and an 80,000-case win-detection cross-check against an independent reference implementation.
+
 ## [0.5.0] - 2026-08-17
 
 ### Added
