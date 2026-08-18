@@ -5,7 +5,7 @@ MODE="${1:-run}"
 APP_NAME="DeepSeek Harness"
 PROCESS_NAME="DeepSeekHarness"
 BUNDLE_ID="com.elliotguo.deepseek-harness"
-APP_VERSION="0.6.0"
+APP_VERSION="0.7.0"
 MIN_SYSTEM_VERSION="14.0"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

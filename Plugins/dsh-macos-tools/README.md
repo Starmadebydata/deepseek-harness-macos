@@ -12,7 +12,7 @@ DeepSeek Harness 的 macOS 原生工具集插件（宿主插件，零依赖）�
 | `macos_clipboard_set` | 写入剪贴板文本 |
 | `macos_notify` | 发送系统通知（可带提示音） |
 | `macos_speak` | 系统语音朗读（`say`，可选语音与语速） |
-| `macos_music` | 控制 Apple Music：播放/暂停/切歌/停止，或查询当前曲目 |
+| `macos_music` | 控制 Apple Music：播放/暂停/切歌/停止、查询当前曲目、按名称在资料库搜索或直接播放 |
 | `macos_screenshot` | 截取整个屏幕或指定显示器为 PNG |
 | `macos_volume` | 查询/设置系统输出音量 |
 | `macos_app` | 启动、激活或退出应用（按名字/包 ID/路径） |

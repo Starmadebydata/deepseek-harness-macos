@@ -1,6 +1,6 @@
 # DeepSeek Harness for macOS
 
-Current release: **0.6.0** · [Changelog](CHANGELOG.md)
+Current release: **0.7.0** · [Changelog](CHANGELOG.md)
 
 A lightweight native macOS wrapper for the official [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web UI.
 
@@ -29,7 +29,7 @@ It turns the local Harness server into a normal Mac app: double-click to launch,
 - Opens Spotify tracks, albums, playlists, and podcasts in the right-sidebar browser from a pasted share link
 - Reads local EPUB and PDF e-books in a right-sidebar reader with folder import
 - Lets users choose which tabs appear in the right sidebar from Settings → General
-- Gives the agent native macOS tools — opening files/folders/URLs, revealing in Finder, clipboard read/write, notifications, text-to-speech, Apple Music control, screenshots, volume, and app control — via the bundled `dsh-macos-tools` plugin
+- Gives the agent native macOS tools — opening files/folders/URLs, revealing in Finder, clipboard read/write, notifications, text-to-speech, Apple Music control with library search and play-by-name, screenshots, volume, and app control — via the bundled `dsh-macos-tools` plugin
 - Bundles a full-screen Sichuan Mahjong game (`dsh-mahjong`, 血战到底) you can play against three AI opponents at a realistic mahjong table, with classic tile patterns, live hand analysis, and multi-round scoring
 - Supports the model providers available in the installed Harness version, including custom providers
 

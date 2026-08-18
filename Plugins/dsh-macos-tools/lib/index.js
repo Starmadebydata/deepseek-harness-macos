@@ -88,6 +88,11 @@ function cleanAppleScript(value) {
   return String(value).replace(/[\x00-\x1f\\]/g, "");
 }
 
+/** 清理用于嵌入 AppleScript 字符串字面量的搜索词：去掉控制字符、反斜杠与双引号。 */
+function cleanMusicQuery(value) {
+  return String(value).replace(/[\x00-\x1f\\"]/g, "").trim();
+}
+
 // ── 工具定义 ────────────────────────────────────────────────────────────────
 // 每个工具给出完整 JSON Schema 的 parameters 与 output：注册器会用
 // output.schema 校验 execute 的返回值，output.render 决定模型可见的内容。
@@ -323,14 +328,18 @@ const macosTools = [
 
   {
     name: "macos_music",
-    description: "控制 Apple Music（或 iTunes）播放：播放、暂停、下一首、上一首、停止，或查询当前曲目信息。",
+    description: "控制 Apple Music（或 iTunes）播放：播放、暂停、下一首、上一首、停止、查询状态，或按名称在资料库中搜索/播放歌曲。",
     parameters: {
       type: "object",
       properties: {
         action: {
           type: "string",
-          enum: ["play", "pause", "playpause", "next", "previous", "stop", "status"],
-          description: "要执行的动作：status 查询播放状态与当前曲目，其余为播放控制。"
+          enum: ["play", "pause", "playpause", "next", "previous", "stop", "status", "search", "play_track"],
+          description: "要执行的动作：status 查询播放状态与当前曲目；search 按名称在资料库搜索（返回前 8 个匹配）；play_track 按名称搜索并直接播放（优先精确匹配）；其余为播放控制。"
+        },
+        query: {
+          type: "string",
+          description: "action 为 search / play_track 时的搜索词（歌曲名或其一部分，不区分大小写）。"
         }
       },
       required: ["action"]
@@ -345,7 +354,21 @@ const macosTools = [
           state: { type: "string" },
           track: { type: "string" },
           artist: { type: "string" },
-          album: { type: "string" }
+          album: { type: "string" },
+          query: { type: "string" },
+          matches: {
+            type: "array",
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                name: { type: "string" },
+                artist: { type: "string" },
+                album: { type: "string" }
+              },
+              required: ["name"]
+            }
+          }
         },
         required: ["ok", "action"]
       },
@@ -357,6 +380,19 @@ const macosTools = [
           if (value.artist) parts.push(`歌手：${value.artist}`);
           if (value.album) parts.push(`专辑：${value.album}`);
           return [{ type: "text", text: parts.filter(Boolean).join("\n") || "未在播放任何曲目" }];
+        }
+        if (value.action === "search") {
+          if (!value.matches || value.matches.length === 0) {
+            return [{ type: "text", text: `资料库中没有找到包含「${value.query}」的歌曲` }];
+          }
+          const lines = value.matches.map((m, i) => `${i + 1}. ${m.name}${m.artist ? ` — ${m.artist}` : ""}${m.album ? `（${m.album}）` : ""}`);
+          return [{ type: "text", text: `搜索「${value.query}」找到 ${value.matches.length} 首：\n${lines.join("\n")}` }];
+        }
+        if (value.action === "play_track") {
+          return [{
+            type: "text",
+            text: `正在播放：${value.track}${value.artist ? ` — ${value.artist}` : ""}${value.album ? `（${value.album}）` : ""}`
+          }];
         }
         return [{ type: "text", text: `已执行：${value.action}` }];
       }
@@ -382,6 +418,57 @@ const macosTools = [
         const { stdout } = await run("/usr/bin/osascript", ["-e", script], { timeoutMs: 20000 });
         const [state, track, artist, album] = stdout.trim().split("||");
         return { ok: true, action, state: state || "", track: track || "", artist: artist || "", album: album || "" };
+      }
+      if (action === "search" || action === "play_track") {
+        const query = cleanMusicQuery(requireText(args.query, "query", 200));
+        if (action === "search") {
+          const script = [
+            APP,
+            `set q to "${query}"`,
+            'set out to ""',
+            "set n to 0",
+            "try",
+            "  set matches to (every track whose name contains q)",
+            "  repeat with t in matches",
+            '    set out to out & ((name of t) as string) & "||" & ((artist of t) as string) & "||" & ((album of t) as string) & linefeed',
+            "    set n to n + 1",
+            "    if n >= 8 then exit repeat",
+            "  end repeat",
+            "end try",
+            "return out",
+            "end tell"
+          ].join("\n");
+          const { stdout } = await run("/usr/bin/osascript", ["-e", script], { timeoutMs: 30000 });
+          const matches = stdout.trim().split("\n").filter(Boolean).map((line) => {
+            const [name, artist, album] = line.split("||");
+            const clean = (v) => (v && v !== "missing value" ? v : "");
+            return { name: clean(name), artist: clean(artist), album: clean(album) };
+          });
+          return { ok: true, action, query, matches };
+        }
+        const script = [
+          APP,
+          `set q to "${query}"`,
+          "set matches to (every track whose name contains q)",
+          "if (count of matches) is 0 then",
+          '  return "NO_MATCH"',
+          "end if",
+          "set target to item 1 of matches",
+          "repeat with t in matches",
+          "  if (name of t) is q then",
+          "    set target to t",
+          "    exit repeat",
+          "  end if",
+          "end repeat",
+          "play target",
+          'return ((name of target) as string) & "||" & ((artist of target) as string) & "||" & ((album of target) as string)',
+          "end tell"
+        ].join("\n");
+        const { stdout } = await run("/usr/bin/osascript", ["-e", script], { timeoutMs: 30000 });
+        if (stdout.trim() === "NO_MATCH") throw new Error(`资料库中没有找到包含「${args.query}」的歌曲`);
+        const [track, artist, album] = stdout.trim().split("||");
+        const clean = (v) => (v && v !== "missing value" ? v : "");
+        return { ok: true, action, query, track: clean(track), artist: clean(artist), album: clean(album) };
       }
       const verbs = { play: "play", pause: "pause", playpause: "playpause", next: "next track", previous: "previous track", stop: "stop" };
       const verb = verbs[action];

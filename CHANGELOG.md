@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-08-18
+
+### Added
+
+- Extend the `macos_music` tool in `dsh-macos-tools` with Apple Music library search and play-by-name: `search` returns the first 8 matching tracks (name/artist/album), and `play_track` finds and plays a track by name (exact match preferred).
+
 ## [0.6.0] - 2026-08-18
 
 ### Added
