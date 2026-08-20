@@ -22,6 +22,7 @@ jobs:
           node --check Plugins/dsh-macos-tools/lib/index.js
           bash -n script/install_plugins.sh
           bash -n script/build_and_run.sh
+          python3 -m py_compile script/dsh_doctor.py
       - name: Build app bundle
         run: ./script/build_and_run.sh --build
       - name: Validate app bundle

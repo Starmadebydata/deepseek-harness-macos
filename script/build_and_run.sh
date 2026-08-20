@@ -23,6 +23,11 @@ if [[ "$MODE" == "--install-plugin" || "$MODE" == "install-plugin" ]]; then
   exit 0
 fi
 
+if [[ "$MODE" == "--doctor" || "$MODE" == "doctor" ]]; then
+  python3 "$ROOT_DIR/script/dsh_doctor.py" --fix
+  exit $?
+fi
+
 pkill -x "$PROCESS_NAME" >/dev/null 2>&1 || true
 
 cd "$ROOT_DIR"
@@ -79,6 +84,7 @@ open_app() {
 case "$MODE" in
   run)
     "$ROOT_DIR/script/install_plugins.sh"
+    python3 "$ROOT_DIR/script/dsh_doctor.py" --fix || true
     open_app
     ;;
   --debug|debug)
@@ -97,6 +103,7 @@ case "$MODE" in
     ;;
   --verify|verify)
     "$ROOT_DIR/script/install_plugins.sh"
+    python3 "$ROOT_DIR/script/dsh_doctor.py" --fix || true
     open_app
     for _ in {1..20}; do
       if pgrep -x "$PROCESS_NAME" >/dev/null; then
@@ -111,7 +118,7 @@ case "$MODE" in
     echo "$APP_BUNDLE"
     ;;
   *)
-    echo "用法：$0 [run|--build|--install-plugin|--debug|--logs|--telemetry|--verify]" >&2
+    echo "用法：$0 [run|--build|--install-plugin|--doctor|--debug|--logs|--telemetry|--verify]" >&2
     exit 2
     ;;
 esac

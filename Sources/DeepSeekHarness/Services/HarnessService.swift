@@ -20,8 +20,9 @@ final class HarnessService {
 
         state = .connecting
         if await serverResponds() {
-            ownsServer = true
-            state = .ready(ownsServer: true)
+            // An already-running local server is reused, not owned.
+            ownsServer = false
+            state = .ready(ownsServer: false)
             reloadToken = UUID()
             return
         }

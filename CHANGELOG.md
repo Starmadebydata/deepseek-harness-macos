@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Add `script/dsh_doctor.py` and `./script/build_and_run.sh --doctor` to validate and repair local DeepSeek Harness model/provider config (credential mix-ups, colliding provider ids, missing OpenCode/Kimi providers, and accidental re-enablement of the model router).
+
+### Fixed
+
+- Reuse an already-running local `dsh` server without claiming ownership, so quitting the app no longer stops a server the app did not start.
+- Run the doctor automatically on normal app launch/verify paths so common local provider misconfigurations are repaired before the window opens.
+
 ## [0.7.0] - 2026-08-18
 
 ### Added

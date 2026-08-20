@@ -71,6 +71,12 @@ dist/DeepSeek Harness.app
 ./script/build_and_run.sh --install-plugin
 ```
 
+修复本机常见的模型/密钥/路由配置问题：
+
+```bash
+./script/build_and_run.sh --doctor
+```
+
 运行测试：
 
 ```bash

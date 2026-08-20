@@ -73,6 +73,12 @@ Install or refresh only the bundled plugins:
 ./script/build_and_run.sh --install-plugin
 ```
 
+Repair common local Harness provider/config problems:
+
+```bash
+./script/build_and_run.sh --doctor
+```
+
 Run tests:
 
 ```bash
